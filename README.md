@@ -1,2 +1,2 @@
 # op-client
-Containerized client to connecting to an OptiPass server.
+Containerized client for connecting to an OptiPass server.
