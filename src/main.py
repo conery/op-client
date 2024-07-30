@@ -12,25 +12,27 @@
 # run OptiPass.
 
 import argparse
-
 import panel as pn
+import requests
 
 from gui.app import TideGatesApp
+from op import OP
+
+args = None
 
 def init_cli():
     """
-    Use argparse to create the command line API.
-
-    Returns:
-        a Namespace object with values of the command line arguments. 
+    Use argparse to create the command line API.  After parsing the
+    arguments save them in a global variable named args.
     """
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--server', metavar='URL', help='web address of the OptiPass server')
-    parser.add_argument('--project', metavar='X', help='name of dataset to use')
+    parser.add_argument('--server', metavar='S', default='http://localhost:8000', help='URL of the OptiPass server')
+    parser.add_argument('--project', metavar='X', required=True, help='name of dataset to use')
     parser.add_argument('--port', metavar='N', type=int, default=5006, help='local port for the Panel server')
 
-    return parser.parse_args()
+    global args
+    args = parser.parse_args()
 
 def make_app():
     """
@@ -41,7 +43,7 @@ def make_app():
     """
     return TideGatesApp(
         title='Tide Gate Optimization', 
-        sidebar_width=450
+        sidebar_width=450,
     )
 
 def start_app(port):
@@ -59,6 +61,14 @@ def start_app(port):
     )
 
 if __name__ == '__main__':
-    args = init_cli()
-    start_app(args.port)
+    init_cli()
+    try:
+        OP.setup(args.server, args.project)
+        start_app(args.port)
+    except requests.exceptions.ConnectionError as err:
+        print(f'failed to connect to {args.server}')
+    except Exception as err:
+        print(err)
+    finally:
+        exit(1)
 

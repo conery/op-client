@@ -3,6 +3,7 @@
 
 import panel as pn
 
+from op import OP
 from .styles import *
 
 pn.extension('gridstack', 'tabulator', 'floatpanel')
@@ -35,7 +36,11 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         """
         super(TideGatesApp, self).__init__(**params)
 
-        self.map_pane = pn.panel("Map")
+        self.map_pane = pn.Column(
+            pn.panel("Map"),
+            pn.panel(OP.server_url),
+            pn.panel(OP.project_name),
+        )
 
         self.region_boxes = pn.panel("Regions")
         self.budget_box = pn.panel("Budgets")
@@ -81,6 +86,7 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         
         self.sidebar.append(pn.Row(self.map_pane))
         self.main.append(self.tabs)
+      
 
     def section_head(self, s, b = None):
         """
