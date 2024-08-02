@@ -11,3 +11,15 @@ header_styles = {
     'margin-bottom': '0px',
     'padding-top': '10px',
 }
+
+box_styles = {
+    'padding-top': '5px',
+    'padding-bottom': '5px',
+}
+
+box_style_sheet = '''input[type="checkbox" i]
+{
+    margin-left: 10px;       /* space to left of checkbox */
+    margin-right: 5px;       /* space between checkbox and label */
+}
+'''

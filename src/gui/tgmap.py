@@ -45,7 +45,7 @@ class TGMap:
 
     def display_regions(self, selection):
         """
-        This method is called when the user clicks the checkbox next to the name
+        Method called when the user clicks the checkbox next to the name
         of a region.  Set the visible attribute of each dot to True or False depending
         on whether the region it is in is selected.
 
@@ -71,14 +71,12 @@ class StaticMap(TGMap):
         )
         p.image_url(url=[url], x = 0, y = ypixels, h = ypixels, w = xpixels)
         bf = OP.fetch_barriers()
-        print(bf)
         self.dots = { }
         for r in OP.region_names():
             df = bf[bf.region == r]
-            print(r, df)
             c = p.circle('X','Y', size=10, color='darkslategray', source=df)
             self.dots[r] = c
-            # c.visible = False
+            c.visible = False
         self.map = p
         
 class TiledMap(TGMap):
