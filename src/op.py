@@ -2,6 +2,9 @@
 # Abstract interface to the OptiPass server
 #
 
+from io import StringIO
+import json
+import pandas as pd
 import requests
 
 class OP:
@@ -23,9 +26,11 @@ class OP:
         Initialize the connection to the OptiPass server.  This method
         must be called first.
 
-        Connect to the server and get a list of project (data set) names.
+        Connect to the server and get a list of project (data set) names
+        and a description of the map to display in the sidebar.
+
         If `project` is not in the list raise an exception, otherwise save
-        the URL and project name.
+        the URL, project name, and map info.
 
         Arguments:
           server: the URL of an OptiPass REST server
@@ -38,3 +43,23 @@ class OP:
         OP.server_url = server
         OP.project_name = project
 
+        req = f'{server}/mapinfo/{project}'
+        resp = requests.get(req)
+        OP.mapinfo = json.loads(resp.json()['mapinfo'])
+
+    @staticmethod
+    def fetch_barriers():
+        req = f'{OP.server_url}/barriers/{OP.project_name}'
+        resp = requests.get(req)
+        buf = StringIO(resp.json()['barriers'])
+        return pd.read_csv(buf)
+
+    @staticmethod
+    def url_for_figure(name):
+        return f'{OP.server_url}/image/{name}'
+    
+    @staticmethod
+    def region_names():
+        req = f'{OP.server_url}/regions/{OP.project_name}'
+        resp = requests.get(req)
+        return resp.json()['regions']

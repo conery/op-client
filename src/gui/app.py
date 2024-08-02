@@ -4,6 +4,7 @@
 import panel as pn
 
 from op import OP
+from gui.tgmap import TGMap
 from .styles import *
 
 pn.extension('gridstack', 'tabulator', 'floatpanel')
@@ -36,10 +37,9 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         """
         super(TideGatesApp, self).__init__(**params)
 
+        self.map = TGMap.init(OP.mapinfo)
         self.map_pane = pn.Column(
-            pn.panel("Map"),
-            pn.panel(OP.server_url),
-            pn.panel(OP.project_name),
+            pn.panel(self.map.graphic())
         )
 
         self.region_boxes = pn.panel("Regions")
