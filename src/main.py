@@ -30,6 +30,7 @@ def init_cli():
     parser.add_argument('--server', metavar='S', default='http://localhost:8000', help='URL of the OptiPass server')
     parser.add_argument('--project', metavar='X', required=True, help='name of dataset to use')
     parser.add_argument('--port', metavar='N', type=int, default=5006, help='local port for the Panel server')
+    parser.add_argument('--tab', metavar='N', type=int, default=0, help='initial tab to display in GUI')
 
     global args
     args = parser.parse_args()
@@ -54,7 +55,6 @@ def start_app(port):
     pn.serve( 
         {'tidegates': make_app},
         port = port,
-        admin = True,
         verbose = True,
         autoreload = True,
         websocket_origin= '*',
@@ -63,7 +63,7 @@ def start_app(port):
 if __name__ == '__main__':
     init_cli()
     try:
-        OP.setup(args.server, args.project)
+        OP.setup(args.server, args.project, args.tab)
         start_app(args.port)
     except requests.exceptions.ConnectionError as err:
         print(f'failed to connect to {args.server}')

@@ -28,7 +28,6 @@ class TGMap:
 
     @staticmethod
     def init(spec):
-        print(spec)
         mods = globals()
         if 'map_type' not in spec:
             raise ValueError(f'TGMap: Mapinfo missing a map_type')
