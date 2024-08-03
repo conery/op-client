@@ -10,7 +10,7 @@ import requests
 class MetaOP(type):
     """
     This metaclass creates the API for the OP class.  It defines read-only
-    attributes that can be accessed but not written from outside the module.
+    attributes that can be accessed but not written from outside the OP module.
     The values of the attributes can only be set when the setup method is
     called.
     """
@@ -22,6 +22,10 @@ class MetaOP(type):
     @property
     def project_name(cls):
         return cls._project_name
+
+    @property
+    def region_names(cls):
+        return cls._region_names
 
     @property
     def barrier_frame(cls):
@@ -60,6 +64,10 @@ class MetaOP(type):
         resp = requests.get(req)
         cls._mapinfo = json.loads(resp.json()['mapinfo'])
 
+        req = f'{server}/regions/{project}'
+        resp = requests.get(req)
+        cls._region_names = resp.json()['regions']
+
         req = f'{server}/barriers/{project}'
         resp = requests.get(req)
         buf = StringIO(resp.json()['barriers'])
@@ -78,7 +86,8 @@ class OP(metaclass=MetaOP):
     """
 
     @staticmethod
-    def region_names():
-        req = f'{OP.server_url}/regions/{OP.project_name}'
+    def projects():
+        req = 'http://localhost:8000/projects'
         resp = requests.get(req)
-        return resp.json()['regions']
+        return resp.json()
+
