@@ -28,6 +28,10 @@ class MetaOP(type):
         return cls._region_names
 
     @property
+    def total_cost(cls):
+        return cls._total_cost
+
+    @property
     def barrier_frame(cls):
         return cls._barrier_frame
 
@@ -64,14 +68,14 @@ class MetaOP(type):
         resp = requests.get(req)
         cls._mapinfo = json.loads(resp.json()['mapinfo'])
 
-        req = f'{server}/regions/{project}'
-        resp = requests.get(req)
-        cls._region_names = resp.json()['regions']
-
         req = f'{server}/barriers/{project}'
         resp = requests.get(req)
         buf = StringIO(resp.json()['barriers'])
         cls._barrier_frame = pd.read_csv(buf)
+
+        total_cost = cls._barrier_frame[['region','cost']].groupby('region').sum()
+        cls._region_names = sorted(list(total_cost.index))
+        cls._total_cost = { r[0]: r[1].cost for r in total_cost.iterrows() }
 
         cls._initial_tab = tab
 

@@ -38,9 +38,6 @@ def test_setup(barriers, mapinfo):
     path_to_projects = f'{server}/projects'
     responses.get(path_to_projects, json = ["demo"])
 
-    path_to_regions = f'{server}/regions/demo'
-    responses.get(path_to_regions, json = {"project":"demo", "regions":['Red Fork', 'Trident']}) 
-
     with open(barriers) as f:
         path_to_barriers = f'{server}/barriers/demo'
         responses.get(path_to_barriers, json = {"project":"demo", "barriers":f.read()})
@@ -64,6 +61,9 @@ def test_setup(barriers, mapinfo):
     assert OP.mapinfo['map_type'] == 'StaticMap'
     assert OP.mapinfo['map_file'] == 'Riverlands.png'
     assert OP.mapinfo['map_title'] == 'The Riverlands'
+
+    assert sorted(OP.total_cost.keys()) == OP.region_names
+    assert sum(OP.total_cost.values()) ==  OP.barrier_frame.cost.sum()  
 
     with pytest.raises(AttributeError) as err:
         OP.initial_tab = 2
