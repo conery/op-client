@@ -56,14 +56,14 @@ def test_setup(barriers, mapinfo):
 
     assert len(OP.barrier_frame) == 6
     assert len(OP.barrier_frame.columns) == 9
-    assert OP.barrier_frame.cost.sum() == 590
+    assert round(OP.barrier_frame.cost.sum()) == 590000
 
     assert OP.mapinfo['map_type'] == 'StaticMap'
     assert OP.mapinfo['map_file'] == 'Riverlands.png'
     assert OP.mapinfo['map_title'] == 'The Riverlands'
 
     assert sorted(OP.total_cost.keys()) == OP.region_names
-    assert sum(OP.total_cost.values()) ==  OP.barrier_frame.cost.sum()  
+    assert round(sum(OP.total_cost.values())) ==  round(OP.barrier_frame.cost.sum())
 
     with pytest.raises(AttributeError) as err:
         OP.initial_tab = 2

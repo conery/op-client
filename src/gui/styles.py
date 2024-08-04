@@ -23,3 +23,9 @@ box_style_sheet = '''input[type="checkbox" i]
     margin-right: 5px;       /* space between checkbox and label */
 }
 '''
+
+slider_style_sheet = '''.bk-input-group
+{
+    padding: 10px;          /* space between value and slider */
+}
+'''

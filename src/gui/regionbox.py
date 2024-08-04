@@ -27,7 +27,6 @@ class RegionBox(pn.Column):
           budget:  the BudgetBox object to update when regions are selected
         """
         super(RegionBox, self).__init__(margin=(10,0,10,5))
-        # self.totals = project.totals
         self.map = map
         self.budget_box = budget
         boxes = []
@@ -54,8 +53,8 @@ class RegionBox(pn.Column):
                     self.selected.add(r)
                 else:
                     self.selected.remove(r)
-                # amount = sum(self.totals[x] for x in self.selected)
-                # self.budget_box.set_budget_max(amount)
+                amount = sum(OP.total_cost[x] for x in self.selected)
+                self.budget_box.set_budget_max(amount)
         self.map.display_regions(self.selected)
         # self.map.zoom(self.selected)
         if self.external_cb:
