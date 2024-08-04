@@ -83,15 +83,10 @@ class OP(metaclass=MetaOP):
     """
     Interface to an OptiPass server.  The module consists of a set of
     static methods that manage a single connection (i.e. it's basically
-    a singleton object).  One set of methods fetch project data such as
-    barrier information needed to draw the map or target names to fill
-    to fill out the target widget.  Others provide an API for running
-    OptiPass and collecting results.
+    a singleton object). 
     """
 
     @staticmethod
-    def projects():
-        req = 'http://localhost:8000/projects'
-        resp = requests.get(req)
-        return resp.json()
+    def url_for_figure(fn):
+        return f'{OP.server_url}/image/{fn}'
 

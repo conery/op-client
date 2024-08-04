@@ -88,7 +88,8 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             width=800,
             # height=700,
         )
-        
+        self.tabs.active = OP.initial_tab
+
         self.sidebar.append(pn.Row(self.map_pane))
         self.main.append(self.tabs)
       

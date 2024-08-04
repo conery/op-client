@@ -31,7 +31,7 @@ class RegionBox(pn.Column):
         self.map = map
         self.budget_box = budget
         boxes = []
-        for name in OP.region_names():
+        for name in OP.region_names:
             box = pn.widgets.Checkbox(name=name, styles=box_styles, stylesheets=[box_style_sheet])
             box.param.watch(self.cb, ['value'])
             boxes.append(box)

@@ -69,9 +69,9 @@ class StaticMap(TGMap):
             y_range=(0,ypixels),
         )
         p.image_url(url=[url], x = 0, y = ypixels, h = ypixels, w = xpixels)
-        bf = OP.fetch_barriers()
+        bf = OP.barrier_frame
         self.dots = { }
-        for r in OP.region_names():
+        for r in OP.region_names:
             df = bf[bf.region == r]
             c = p.circle('X','Y', size=10, color='darkslategray', source=df)
             self.dots[r] = c
