@@ -2,9 +2,11 @@
 # An instance of the TGMap class is a map widget that will be
 # displayed in the sidebar
 
+import json
 from op import OP
 import panel as pn
 import pandas as pd
+from pathlib import Path
 
 import bokeh.plotting as bk
 from bokeh.tile_providers import get_provider
@@ -16,9 +18,9 @@ class TGMap:
     A TGMap object manages the display of a map that shows the locations of the barriers
     in a project.  
 
-    A static method named `init` is a factory that instantiates a new map.  Pass it a 
-    "mapinfo" desscriptor fetched from the server, it will return a reference to a new
-    map object belonging to the class specified in the descriptor.
+    A static method named `init` is a factory that instantiates a new map.  It will read 
+    the "mapinfo" file for the project and return a reference to a new
+    map object belonging to the class specified in the mapinfo file.
 
     Attributes:
       map:  a Bokeh figure object, with x and y ranges defined by the locations of the barriers
@@ -27,14 +29,14 @@ class TGMap:
     """
 
     @staticmethod
-    def init(spec):
+    def init():
         mods = globals()
-        if 'map_type' not in spec:
+        if 'map_type' not in OP.mapinfo:
             raise ValueError(f'TGMap: Mapinfo missing a map_type')
-        if cls := spec['map_type']:
-            return mods[cls](spec)
+        if cls := OP.mapinfo['map_type']:
+            return mods[cls]()
         else:
-            raise ValueError(f'TGMAp: unknown map type: {spec}')
+            raise ValueError(f"TGMAp: unknown map type: {OP.mapinfo['map_type']}")
 
     def graphic(self):
         '''
@@ -59,12 +61,13 @@ class StaticMap(TGMap):
     A static map is simply a PNG file downloaded from the server. 
     '''
 
-    def __init__(self, spec):
-        url = OP.url_for_figure(spec['map_file'])
+    def __init__(self):
+        url = f"{OP.server_url}/map/{OP.project_name}/{OP.mapinfo['map_file']}"
+        print(url)
         xpixels = 473
         ypixels = 533
         p = bk.figure(
-            title=spec['map_title'],
+            title=OP.mapinfo['map_title'],
             x_range=(0,xpixels), 
             y_range=(0,ypixels),
         )
@@ -83,7 +86,7 @@ class TiledMap(TGMap):
     A tiled map uses a tile server to fetch the map image.
     '''
 
-    def __init__(self, spec):
+    def __init__(self):
         print('make a tiled map')
 
     def _create_map(self, bf):

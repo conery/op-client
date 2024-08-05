@@ -88,5 +88,5 @@ class OP(metaclass=MetaOP):
 
     @staticmethod
     def url_for_figure(fn):
-        return f'{OP.server_url}/image/{fn}'
+        return f'{OP.server_url}/static/images/'
 

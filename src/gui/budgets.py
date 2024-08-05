@@ -258,21 +258,30 @@ class AdvancedBudgetBox(pn.WidgetBox):
         Callback function invoked when the user moves the maximum budget
         slider.  Computes a new budget increment.
         """
-        self.inc_slider.value = self.max_slider.value // self.count_input.value
+        try:
+            self.inc_slider.value = self.max_slider.value // self.count_input.value
+        except ArithmeticError:
+            pass
 
     def inc_updated(self, e):
         """
         Callback function invoked when the user changes the budget increment.
         Computes a new number of budgets.
         """
-        c = max(self.COUNT_MIN, self.max_slider.value // self.inc_slider.value)
-        c = min(self.COUNT_MAX, c)
-        self.count_input.value = c
+        try:
+            c = max(self.COUNT_MIN, self.max_slider.value // self.inc_slider.value)
+            c = min(self.COUNT_MAX, c)
+            self.count_input.value = c
+        except ArithmeticError:
+            pass
 
     def count_updated(self, e):
         """
         Callback function invoked when the user changes the number of budget
         levels.  Computes a new budget increment.
         """
-        self.inc_slider.value = self.max_slider.value // self.count_input.value
+        try:
+            self.inc_slider.value = self.max_slider.value // self.count_input.value
+        except ArithmeticError:
+            pass
 
