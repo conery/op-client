@@ -47,8 +47,7 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         self.budget_box = BudgetBox()
         self.region_boxes = RegionBox(self.map, self.budget_box)
-        # self.target_boxes = TargetBox()
-        self.target_boxes = pn.panel('Targets')
+        self.target_boxes = TargetBox()
         self.climate_group = pn.panel("Climate")
  
         welcome_tab = pn.Column(

@@ -1,5 +1,6 @@
 
 import panel as pn
+from pathlib import Path
 
 from op import OP
 from .styles import *
@@ -19,6 +20,16 @@ class TargetBox(pn.Column):
             ('Weighted', WeightedTargetBox()),
         )
         self.append(self.tabs)
+
+    @staticmethod
+    def make_layout(obj):
+        """
+        Read the target layout (size of grid, location of each target in the grid)
+        """
+        with open(Path('static')/'layout'/OP.project_name/'targets.txt') as f:
+            obj.layout = [s.split() for s in f.readlines()]
+            obj.nrows = len(obj.layout)
+            obj.ncols = max(len(r) for r in obj.layout)
 
     def selection(self) -> list[str]:
         """
@@ -44,15 +55,14 @@ class BasicTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(BasicTargetBox, self).__init__(margin=(10,0,10,5))
-        self.grid = pn.GridBox(ncols=2)
+        TargetBox.make_layout(self)
+        self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
         self.boxes = { }
-        for row in make_layout():
-            lst = [ ]
+        for row in self.layout:
             for t in row:
                 b = pn.widgets.Checkbox(name=t, styles=box_styles, stylesheets=[box_style_sheet])
-                lst.append(b)
+                self.grid.append(b)
                 self.boxes[t] = b
-            self.grid.objects.extend(lst)
         self.append(self.grid)
 
     def selection(self) -> list[str]:
@@ -79,13 +89,14 @@ class WeightedTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(WeightedTargetBox, self).__init__(margin=(10,0,10,5))
-        self.grid = pn.GridBox(ncols=2)
-        for tnames in make_layout():
-            for t in tnames:
+        TargetBox.make_layout(self)
+        self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
+        for row in self.layout:
+            for t in row:
                 w = pn.Row()
                 w.append(pn.widgets.TextInput(name='', placeholder='', width=25, stylesheets=[input_style_sheet]))
                 w.append(t)
-                self.grid.objects.append(w)
+                self.grid.append(w)
         self.append(self.grid)
 
     def selection(self) -> list[str]:

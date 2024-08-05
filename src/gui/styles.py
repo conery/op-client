@@ -29,3 +29,10 @@ slider_style_sheet = '''.bk-input-group
     padding: 10px;          /* space between value and slider */
 }
 '''
+
+input_style_sheet = '''.bk-input {
+    padding: 0px;
+    text-align: center;
+    background-color: #EEEEEE;
+}
+'''
