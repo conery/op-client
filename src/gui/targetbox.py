@@ -15,6 +15,18 @@ class TargetBox(pn.Column):
 
     def __init__(self):
         super(TargetBox, self).__init__(margin=(10,0,10,5))
+
+        if OP.mapping_name:
+            lst = [s.capitalize() for s in OP.target_columns]
+            label = OP.mapping_name.capitalize()
+            self.mapping_buttons = pn.widgets.RadioBoxGroup(name=label, options=lst, inline=True)
+            self.append(pn.Row(
+                pn.pane.HTML(f'<b>{label}<b>'),
+                self.mapping_buttons,
+            ))
+        else:
+            self.mapping_buttons = None
+
         self.tabs = pn.Tabs(
             ('Basic', BasicTargetBox()),
             ('Weighted', WeightedTargetBox()),
@@ -54,12 +66,14 @@ class BasicTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(BasicTargetBox, self).__init__(margin=(10,0,10,5))
+        df = OP.target_frame.set_index('abbrev')
         TargetBox.make_layout(self)
         self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
         self.boxes = { }
         for row in self.layout:
             for t in row:
-                b = pn.widgets.Checkbox(name=t, styles=box_styles, stylesheets=[box_style_sheet])
+                s = df.loc[t].long
+                b = pn.widgets.Checkbox(name=s, styles=box_styles, stylesheets=[box_style_sheet])
                 self.grid.append(b)
                 self.boxes[t] = b
         self.append(self.grid)
@@ -88,13 +102,15 @@ class WeightedTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(WeightedTargetBox, self).__init__(margin=(10,0,10,5))
+        df = OP.target_frame.set_index('abbrev')
         TargetBox.make_layout(self)
         self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
         for row in self.layout:
             for t in row:
+                s = df.loc[t].long
                 w = pn.Row()
                 w.append(pn.widgets.TextInput(name='', placeholder='', width=25, stylesheets=[input_style_sheet]))
-                w.append(t)
+                w.append(s)
                 self.grid.append(w)
         self.append(self.grid)
 
@@ -110,13 +126,3 @@ class WeightedTargetBox(pn.Column):
         """
         return [w[0].value for w in self.grid.objects if w[0].value]
     
-
-class MappingBox(pn.Row):
-    """
-    A MappingBox is displayed if a project has more than one way to define
-    target values (e.g. current or future climate scenarios)
-    """
-
-    def __init__(self):
-        super(MappingBox, self).__init__()
-        self.append('Climate Scenario')

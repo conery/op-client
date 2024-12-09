@@ -7,7 +7,7 @@ from op import OP
 from gui.tgmap import TGMap
 from gui.regionbox import RegionBox
 from gui.budgets import BudgetBox
-from gui.targetbox import TargetBox, MappingBox
+from gui.targetbox import TargetBox
 from .styles import *
 
 pn.extension('gridstack', 'tabulator', 'floatpanel')
@@ -48,7 +48,6 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         self.budget_box = BudgetBox()
         self.region_boxes = RegionBox(self.map, self.budget_box)
         self.target_boxes = TargetBox()
-        self.mapping_box = MappingBox()
         self.climate_group = pn.panel("Climate")
  
         welcome_tab = pn.Column(
@@ -69,7 +68,6 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             self.budget_box,
 
             self.section_head('Targets'),
-            self.mapping_box,
             self.target_boxes,
         )
 

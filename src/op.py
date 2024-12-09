@@ -47,6 +47,14 @@ class MetaOP(type):
         return cls._target_layout
 
     @property
+    def mapping_name(cls):
+        return cls._mapping_name
+
+    @property
+    def target_columns(cls):
+        return cls._target_columns
+
+    @property
     def total_cost(cls):
         return cls._total_cost
 
@@ -78,7 +86,6 @@ class MetaOP(type):
         '''
         req = f'{server}/projects'
         resp = requests.get(req)
-        # if project not in resp.json():
         if resp.status_code != 200 or project not in resp.json():
             raise ValueError(f'unknown project: {project}')
         cls._server_url = server
@@ -92,6 +99,14 @@ class MetaOP(type):
         buf = StringIO(dct['targets'])
         cls._target_frame = pd.read_csv(buf)
         cls._target_layout = dct['layout'].split('\n')
+
+        req = f'{server}/colnames/{project}'
+        resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        dct = resp.json()
+        cls._mapping_name = dct['name']
+        cls._target_columns = dct['files']
 
         req = f'{server}/mapinfo/{project}'
         resp = requests.get(req)
