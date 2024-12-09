@@ -2,11 +2,11 @@
 # An instance of the TGMap class is a map widget that will be
 # displayed in the sidebar
 
-import json
-from op import OP
-import panel as pn
+from io import StringIO
+import numpy as np
+from op import OP, OPServerError
 import pandas as pd
-from pathlib import Path
+import requests
 
 import bokeh.plotting as bk
 from bokeh.tile_providers import get_provider
@@ -70,6 +70,7 @@ class StaticMap(TGMap):
             title=OP.mapinfo['map_title'],
             x_range=(0,xpixels), 
             y_range=(0,ypixels),
+            tools=OP.mapinfo['map_tools'],
         )
         p.image_url(url=[url], x = 0, y = ypixels, h = ypixels, w = xpixels)
         bf = OP.barrier_frame
@@ -83,25 +84,22 @@ class StaticMap(TGMap):
         
 class TiledMap(TGMap):
     '''
-    A tiled map uses a tile server to fetch the map image.
+    A tiled map uses a tile server to fetch the map image.  Fetch the main barrier
+    file to get the coordinates and other data for each barrier.
     '''
 
     def __init__(self):
-        print('make a tiled map')
-
-    def _create_map(self, bf):
-        """
-        Hidden method, called by the constructor to create a Bokeh figure 
-        based on the latitude and longitude of the barriers in
-        a project.
-        """
+        bf = self._fetch_barriers()
+        self.map_info = self._make_info(bf)
+        self.regions = self._make_region_list()
+        self.ranges = self._create_ranges()
         self.tile_provider = get_provider(xyz.OpenStreetMap.Mapnik)
         p = bk.figure(
             title='Oregon Coast', 
             height=900,
             width=400,
-            x_range=(bf.map_info.x.min()*0.997,bf.map_info.x.max()*1.003), 
-            y_range=(bf.map_info.y.min()*0.997,bf.map_info.y.max()*1.003),
+            x_range=(self.map_info.x.min()*0.997,self.map_info.x.max()*1.003), 
+            y_range=(self.map_info.y.min()*0.997,self.map_info.y.max()*1.003),
             x_axis_type='mercator',
             y_axis_type='mercator',
             toolbar_location='below',
@@ -114,25 +112,66 @@ class TiledMap(TGMap):
         )
         p.add_tile(self.tile_provider)
         p.toolbar.autohide = True
-        dots = { }
-        for r in bf.regions:
-            df = bf.map_info[bf.map_info.region == r]
+        self.dots = { }
+        for r in self.regions:
+            df = self.map_info[self.map_info.region == r]
             c = p.circle('x', 'y', size=5, color='darkslategray', source=df, tags=list(df.id))
-            dots[r] = c
+            self.dots[r] = c
             c.visible = False
 
-        self.outer_x = (bf.map_info.x.min()*0.997,bf.map_info.x.max()*1.003)
-        self.outer_y = (bf.map_info.y.min()*0.997,bf.map_info.y.max()*1.003)
+        self.map = p
 
-        return p, dots
+        self.outer_x = (self.map_info.x.min()*0.997,self.map_info.x.max()*1.003)
+        self.outer_y = (self.map_info.y.min()*0.997,self.map_info.y.max()*1.003)
     
-    def _create_ranges(self, df):
+    def _fetch_barriers(self):
+        """
+        Hidden method, fetch the barrier data from the server to get the
+        map coordinates and other data we need.
+        """
+        url = f"{OP.server_url}/barriers/{OP.project_name}"
+        resp = requests.get(url)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        buf = StringIO(resp.json()['barriers'])
+        return pd.read_csv(buf)
+    
+    def _make_info(self, bf):
+        """
+        Hidden method, makes a dataframe with attributes needed to display gates on a map.
+        Map latitude and longitude columns in the input frame to Mercator
+        coordinates, and copy the ID, region and barrier types so they can
+        be displayed as tooltips.
+        """
+        df = bf[['ID','region','type']]
+        R = 6378137.0
+        map_info = pd.concat([
+            df, 
+            np.radians(bf.X)*R, 
+            np.log(np.tan(np.pi/4 + np.radians(bf.Y)/2)) * R
+        ], axis=1)
+        map_info.columns = ['id', 'region', 'type', 'x', 'y']
+        return map_info
+
+    def _make_region_list(self):
+        '''
+        Hidden method, make a list of unique region names, sorted by latitude, so regions
+        are displayed in order from north to south.  Updates the list of names in the
+        OP object.
+        '''
+        df = self.map_info[['id','region','y']]
+        mf = df.groupby('region').mean(numeric_only=True).sort_values(by='y',ascending=False)
+        names = list(mf.index)
+        OP.region_names = names
+        return names
+
+    def _create_ranges(self):
         """
         Hidden method, called by the constructor to create a Pandas Dataframe 
         containing the range of latitudes and longitudes of the barriers in
         a project.
         """
-        g = df.map_info.groupby('region')
+        g = self.map_info.groupby('region')
         return pd.DataFrame({
             'x_min': g.min().x,
             'x_max': g.max().x,
@@ -140,7 +179,7 @@ class TiledMap(TGMap):
             'y_max': g.max().y,
         })
 
-    def zoom(self, selection):
+    def display_regions(self, selection):
         """
         Update the map, setting the x and y range based on the currently selected
         regions.
@@ -148,6 +187,7 @@ class TiledMap(TGMap):
         Arguments:
           selection:  a list of names of regions currently selected
         """
+        super().display_regions(selection)
         if len(selection) > 0:
             xmin = min([self.ranges['x_min'][r] for r in selection])
             xmax = max([self.ranges['x_max'][r] for r in selection])

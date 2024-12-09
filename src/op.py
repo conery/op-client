@@ -4,15 +4,22 @@
 
 from io import StringIO
 import json
+import logging
 import pandas as pd
 import requests
+
+class OPServerError(Exception):
+
+    def __init__(self, resp):
+        err = resp.json()['detail']
+        super(OPServerError, self).__init__(err)
 
 class MetaOP(type):
     """
     This metaclass creates the API for the OP class.  It defines read-only
     attributes that can be accessed but not written from outside the OP module.
     The values of the attributes can only be set when the setup method is
-    called.
+    called.  Note: one attribute (region_names) is writeable.
     """
 
     @property
@@ -26,6 +33,18 @@ class MetaOP(type):
     @property
     def region_names(cls):
         return cls._region_names
+    
+    @region_names.setter
+    def region_names(cls, lst):
+        cls._region_names = lst
+
+    @property
+    def target_frame(cls):
+        return cls._target_frame
+
+    @property
+    def target_layout(cls):
+        return cls._target_layout
 
     @property
     def total_cost(cls):
@@ -59,17 +78,31 @@ class MetaOP(type):
         '''
         req = f'{server}/projects'
         resp = requests.get(req)
-        if project not in resp.json():
+        # if project not in resp.json():
+        if resp.status_code != 200 or project not in resp.json():
             raise ValueError(f'unknown project: {project}')
         cls._server_url = server
         cls._project_name = project
 
+        req = f'{server}/targets/{project}'
+        resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        dct = resp.json()
+        buf = StringIO(dct['targets'])
+        cls._target_frame = pd.read_csv(buf)
+        cls._target_layout = dct['layout'].split('\n')
+
         req = f'{server}/mapinfo/{project}'
         resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
         cls._mapinfo = json.loads(resp.json()['mapinfo'])
 
         req = f'{server}/barriers/{project}'
         resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
         buf = StringIO(resp.json()['barriers'])
         cls._barrier_frame = pd.read_csv(buf)
 
@@ -78,6 +111,8 @@ class MetaOP(type):
         cls._total_cost = { r[0]: r[1].cost for r in total_cost.iterrows() }
 
         cls._initial_tab = tab
+
+        logging.info('setup complete')
 
 class OP(metaclass=MetaOP):
     """

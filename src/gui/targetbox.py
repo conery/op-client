@@ -26,10 +26,9 @@ class TargetBox(pn.Column):
         """
         Read the target layout (size of grid, location of each target in the grid)
         """
-        with open(Path('static')/'layout'/OP.project_name/'targets.txt') as f:
-            obj.layout = [s.split() for s in f.readlines()]
-            obj.nrows = len(obj.layout)
-            obj.ncols = max(len(r) for r in obj.layout)
+        obj.layout = [s.split() for s in OP.target_layout]
+        obj.nrows = len(obj.layout)
+        obj.ncols = max(len(r) for r in obj.layout)
 
     def selection(self) -> list[str]:
         """
@@ -111,3 +110,13 @@ class WeightedTargetBox(pn.Column):
         """
         return [w[0].value for w in self.grid.objects if w[0].value]
     
+
+class MappingBox(pn.Row):
+    """
+    A MappingBox is displayed if a project has more than one way to define
+    target values (e.g. current or future climate scenarios)
+    """
+
+    def __init__(self):
+        super(MappingBox, self).__init__()
+        self.append('Climate Scenario')

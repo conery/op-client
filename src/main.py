@@ -12,11 +12,14 @@
 # run OptiPass.
 
 import argparse
+import logging
 import panel as pn
 import requests
 
+from rich.logging import RichHandler
+
 from gui.app import TideGatesApp
-from op import OP
+from op import OP, OPServerError
 
 args = None
 
@@ -27,6 +30,7 @@ def init_cli():
     """
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('--log', metavar='X', choices=['quiet','info','debug'])
     parser.add_argument('--server', metavar='S', default='http://localhost:8000', help='URL of the OptiPass server')
     parser.add_argument('--project', metavar='X', required=True, help='name of dataset to use')
     parser.add_argument('--port', metavar='N', type=int, default=5006, help='local port for the Panel server')
@@ -34,6 +38,24 @@ def init_cli():
 
     global args
     args = parser.parse_args()
+
+def setup_logging():
+    """
+    Configure the logging modile.
+    """
+    match args.log:
+        case 'info':
+            level = logging.INFO
+        case 'debug':
+            level = logging.DEBUG
+        case _:
+            level = logging.WARNING
+    logging.basicConfig(
+        level=level,
+        style='{',
+        format='{relativeCreated:4.0f} msec: {message}',
+        handlers = [RichHandler(markup=True, rich_tracebacks=True)],
+    )
 
 def make_app():
     """
@@ -62,13 +84,18 @@ def start_app(port):
 
 if __name__ == '__main__':
     init_cli()
+    setup_logging()
     try:
         OP.setup(args.server, args.project, args.tab)
         start_app(args.port)
     except requests.exceptions.ConnectionError as err:
-        print(f'failed to connect to {args.server}')
+        logging.error(f'failed to connect to {args.server}')
+    except OPServerError as err:
+        logging.error(f'op-server error: {err}')
+    except ValueError as err:
+        logging.error(err)
     except Exception as err:
-        print(err)
+        logging.exception(err)
     finally:
         exit(1)
 
