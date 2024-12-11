@@ -140,3 +140,46 @@ class OP(metaclass=MetaOP):
     def url_for_figure(fn):
         return f'{OP.server_url}/static/images/'
 
+
+    @staticmethod
+    def format_budgets(cols):
+        return { n: OP.format_budget_amount(n) for n in cols }
+    
+    dollar_format = {
+        'thou':  (1000, 'K'),
+        'mil':   (1000000, 'M'),
+    }
+
+    @staticmethod
+    def format_budget_amount(n):
+        divisor, suffix = OP.dollar_format['mil'] if n >= 1000000 else OP.dollar_format['thou']
+        s = '${:}'.format(n/divisor)
+        if s.endswith('.0'):
+            s = s[:-2]
+        return s+suffix
+
+    @staticmethod
+    def run_optimizer(
+        regions: list[str],
+        budgets: tuple[str,str],
+        targets: list[str],
+        weights: list[int],
+        mapping: str | None,       
+        ):
+        '''
+        Send a request to the op-server to run OptiPass using settings
+        from the widgets.
+
+        Args:
+            regions: a list of geographic regions (river names) to use
+            budgets: budget settings (max, increment)
+            targets: a list of IDs of targets
+            weights: a list of target weights
+            mapping: the name of a column mapping file for targets
+        '''
+        print(regions)
+        print(budgets)
+        print(targets)
+        print(weights)
+        print(mapping)
+        

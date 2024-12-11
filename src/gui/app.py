@@ -1,6 +1,7 @@
 
 # Top level application window of the OptiPass GUI
 
+import logging
 import panel as pn
 
 from op import OP
@@ -8,6 +9,7 @@ from gui.tgmap import TGMap
 from gui.regionbox import RegionBox
 from gui.budgets import BudgetBox
 from gui.targetbox import TargetBox
+from gui.infobox import InfoBox
 from .styles import *
 
 pn.extension('gridstack', 'tabulator', 'floatpanel')
@@ -48,8 +50,12 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         self.budget_box = BudgetBox()
         self.region_boxes = RegionBox(self.map, self.budget_box)
         self.target_boxes = TargetBox()
-        self.climate_group = pn.panel("Climate")
+
+        self.optimize_button = pn.widgets.Button(name='Run Optimizer', stylesheets=[button_style_sheet])
  
+        self.info = InfoBox(self, self.run_optimizer)
+        self.modal.append(self.info)
+
         welcome_tab = pn.Column(
             self.section_head('Welcome'),
             pn.panel("welcome message")
@@ -69,6 +75,8 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
             self.section_head('Targets'),
             self.target_boxes,
+
+            self.optimize_button,
         )
 
         output_tab = pn.Column(
@@ -86,19 +94,59 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             ('Start', start_tab),
             ('Output', output_tab),
             ('Download', download_tab),
-            sizing_mode = 'fixed',
-            width=800,
+            stylesheets=[tab_style_sheet],
+            # tabs_location='left',
+            # sizing_mode = 'fixed',
+            # width=800,
             # height=700,
         )
         self.tabs.active = OP.initial_tab
 
         self.sidebar.append(pn.Row(self.map_pane))
         self.main.append(self.tabs)
-      
 
+        self.optimize_button.on_click(self.validate_settings)
+     
+    
     def section_head(self, s, b = None):
         """
         Create an HTML header for one of the sections in the Start tab.
         """
         header = pn.pane.HTML(f'<h3>{s}</h3>', styles=header_styles)
         return header if b is None else pn.Row(header, b)
+
+    def validate_settings(self, _):
+        """
+        Callback function invoked when the user clicks the Run Optimizer button.
+        """
+        regions = self.region_boxes.selection()
+        budget_max, budget_delta = self.budget_box.values()
+        targets = self.target_boxes.selection()
+
+        if len(regions) == 0 or budget_max == 0 or len(targets) == 0:
+            self.info.show_missing(regions, budget_max, targets)
+            return
+        
+        if weights := self.target_boxes.weights():
+            if not all([w.isdigit() and (1 <= int(w) <= 5) for w in weights]):
+                self.info.show_invalid_weights(weights)
+                return
+            
+        mapping = self.target_boxes.mapping()
+
+        self.info.show_params(regions, budget_max, budget_delta, targets, weights, mapping)
+
+    def run_optimizer(self, _):
+        """
+        Callback function invoked when the user clicks the Continue button after verifying
+        the parameter options.
+
+        Use the settings in the budget widgets to create the URL to pass to the server.
+        """
+        OP.run_optimizer(
+            self.region_boxes.selection(),
+            self.budget_box.values(),
+            self.target_boxes.selection(),
+            self.target_boxes.weights(),
+            self.target_boxes.mapping(),
+        )

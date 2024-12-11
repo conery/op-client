@@ -19,11 +19,11 @@ class TargetBox(pn.Column):
         if OP.mapping_name:
             lst = [s.capitalize() for s in OP.target_columns]
             label = OP.mapping_name.capitalize()
-            self.mapping_buttons = pn.widgets.RadioBoxGroup(name=label, options=lst, inline=True)
-            self.append(pn.Row(
-                pn.pane.HTML(f'<b>{label}<b>'),
+            self.mapping_buttons = pn.widgets.RadioBoxGroup(name=label, options=lst)
+            mapping_box = pn.Column(
+                pn.pane.HTML(f'<b>{label}<b>', align='start'),
                 self.mapping_buttons,
-            ))
+            )
         else:
             self.mapping_buttons = None
 
@@ -31,7 +31,11 @@ class TargetBox(pn.Column):
             ('Basic', BasicTargetBox()),
             ('Weighted', WeightedTargetBox()),
         )
-        self.append(self.tabs)
+        row = pn.Row()
+        row.append(self.tabs)
+        if self.mapping_buttons:
+            row.append(mapping_box)
+        self.append(row)
 
     @staticmethod
     def make_layout(obj):
@@ -53,6 +57,13 @@ class TargetBox(pn.Column):
         Get target weights from the current target widget.
         """
         return self.tabs[self.tabs.active].weights()
+    
+    def mapping(self):
+        """
+        If the targets have alternative column name mappings return the selected
+        mapping name
+        """
+        return self.mapping_buttons.value.lower() if OP.mapping_name else None
 
 
 class BasicTargetBox(pn.Column):
@@ -69,20 +80,18 @@ class BasicTargetBox(pn.Column):
         df = OP.target_frame.set_index('abbrev')
         TargetBox.make_layout(self)
         self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
-        self.boxes = { }
         for row in self.layout:
             for t in row:
                 s = df.loc[t].long
-                b = pn.widgets.Checkbox(name=s, styles=box_styles, stylesheets=[box_style_sheet])
+                b = pn.widgets.Checkbox(name=s, styles=box_styles, stylesheets=[box_style_sheet], tags=[t])
                 self.grid.append(b)
-                self.boxes[t] = b
         self.append(self.grid)
 
     def selection(self) -> list[str]:
         """
         Return a list of IDs of selected targets.
         """
-        return [t for t in self.boxes if self.boxes[t].value ]
+        return [b.tags[0] for b in self.grid.objects if b.value]
     
     def weights(self):
         """
@@ -109,8 +118,8 @@ class WeightedTargetBox(pn.Column):
             for t in row:
                 s = df.loc[t].long
                 w = pn.Row()
-                w.append(pn.widgets.TextInput(name='', placeholder='', width=25, stylesheets=[input_style_sheet]))
-                w.append(s)
+                w.append(pn.widgets.TextInput(name='', placeholder='', width=25, align='center', stylesheets=[input_style_sheet], tags=[t]))
+                w.append(pn.pane.HTML(s))
                 self.grid.append(w)
         self.append(self.grid)
 
@@ -118,7 +127,7 @@ class WeightedTargetBox(pn.Column):
         """
         Return a list of IDs of selected targets.
         """
-        return [w[1].object for w in self.grid.objects if w[0].value]
+        return [w[0].tags[0] for w in self.grid.objects if w[0].value]
 
     def weights(self) -> list[str]:
         """
