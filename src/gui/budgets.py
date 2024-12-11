@@ -45,6 +45,12 @@ class BudgetBox(pn.Column):
           binc:  the increment between budget values
         """
         return self.tabs[self.tabs.active].values()
+    
+    def set_value(self, n):
+        """
+        Initialize the GUI by setting an initial budget value
+        """
+        self.tabs[self.tabs.active].set_value(n)
 
 
 class BasicBudgetBox(pn.WidgetBox):
@@ -108,6 +114,12 @@ class BasicBudgetBox(pn.WidgetBox):
         x = self.map[self.slider.value]
         return x, (x // self.increments)
     
+    def set_value(self, n):
+        """
+        Set the slider to n
+        """
+        self.slider.value = self.slider.options[n]
+    
 class FixedBudgetBox(pn.WidgetBox):
     """
     This option is for situations where a user knows exactly how much money they
@@ -136,6 +148,12 @@ class FixedBudgetBox(pn.WidgetBox):
             s = s[1:]
         n = self.parse_dollar_amount(self.input.value)
         return n, n
+    
+    def set_value(self, n):
+        """
+        Initialize the budget to n
+        """
+        self.input.value = f'${n}'
 
     def parse_dollar_amount(self, s: str):
         """
@@ -246,6 +264,12 @@ class AdvancedBudgetBox(pn.WidgetBox):
         by the values in the corresponding widgets.
         """
         return self.max_slider.value, self.inc_slider.value
+    
+    def set_value(self, n):
+        """
+        Set the budget to n
+        """
+        self.max_slider.value = n
 
     def set_budget_max(self, n):
         """

@@ -65,6 +65,8 @@ class TargetBox(pn.Column):
         """
         return self.mapping_buttons.value.lower() if OP.mapping_name else None
 
+    def set_selection(self, lst):
+        self.tabs[self.tabs.active].set_selection(lst)
 
 class BasicTargetBox(pn.Column):
     """
@@ -92,7 +94,12 @@ class BasicTargetBox(pn.Column):
         Return a list of IDs of selected targets.
         """
         return [b.tags[0] for b in self.grid.objects if b.value]
-    
+
+    def set_selection(self, lst):
+        for b in self.grid.objects:
+            if b.tags[0] in lst:
+                b.value = True
+
     def weights(self):
         """
         There are no weights (all targets considered equally) so return an empty list.
@@ -128,6 +135,11 @@ class WeightedTargetBox(pn.Column):
         Return a list of IDs of selected targets.
         """
         return [w[0].tags[0] for w in self.grid.objects if w[0].value]
+
+    def set_selection(self, lst):
+        for w in self.grid.objects:
+            if w[0].tags[0] in lst:
+                w[0].value = True
 
     def weights(self) -> list[str]:
         """

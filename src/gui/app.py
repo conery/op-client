@@ -4,7 +4,7 @@
 import logging
 import panel as pn
 
-from op import OP
+from op import OP, DevOP
 from gui.tgmap import TGMap
 from gui.regionbox import RegionBox
 from gui.budgets import BudgetBox
@@ -100,13 +100,18 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             # width=800,
             # height=700,
         )
-        self.tabs.active = OP.initial_tab
 
         self.sidebar.append(pn.Row(self.map_pane))
         self.main.append(self.tabs)
 
         self.optimize_button.on_click(self.validate_settings)
-     
+
+        for r in DevOP.default_regions():
+            self.region_boxes.check(r)
+        self.budget_box.set_value(DevOP.default_budget())
+        self.target_boxes.set_selection(DevOP.default_targets())
+
+        self.tabs.active = OP.initial_tab
     
     def section_head(self, s, b = None):
         """

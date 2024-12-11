@@ -5,6 +5,7 @@
 from io import StringIO
 import json
 import logging
+import os
 import pandas as pd
 import requests
 
@@ -177,9 +178,33 @@ class OP(metaclass=MetaOP):
             weights: a list of target weights
             mapping: the name of a column mapping file for targets
         '''
-        print(regions)
-        print(budgets)
-        print(targets)
-        print(weights)
-        print(mapping)
-        
+        # print(regions)
+        # print(budgets)
+        # print(targets)
+        # print(weights)
+        # print(mapping)
+        req = f'{server}/optipass/{OP.project}'
+        print(req)
+
+class DevOP:
+    '''
+    A collection of utility functions for developers
+    '''
+
+    @staticmethod
+    def default_list(varname):
+        if lst := os.getenv(varname):
+            return lst.split(':')
+        return []
+    
+    @staticmethod
+    def default_regions():
+        return DevOP.default_list('OPREGIONS')
+
+    @staticmethod
+    def default_budget():
+        return int(os.getenv('OPBUDGET','0'))
+
+    @staticmethod
+    def default_targets():
+        return DevOP.default_list('OPTARGETS')

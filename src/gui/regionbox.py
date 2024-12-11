@@ -29,15 +29,14 @@ class RegionBox(pn.Column):
         super(RegionBox, self).__init__(margin=(10,0,10,5))
         self.map = map
         self.budget_box = budget
-        boxes = []
+        self.boxes = { }
         for name in OP.region_names:
             box = pn.widgets.Checkbox(name=name, styles=box_styles, stylesheets=[box_style_sheet])
             box.param.watch(self.cb, ['value'])
-            boxes.append(box)
-        self.grid = pn.GridBox(*boxes, ncols=3)
+            self.boxes[name] = box
         self.selected = set()
         self.external_cb = None
-        self.append(self.grid)
+        self.append(pn.GridBox(*self.boxes.values(), ncols=3))
 
     def cb(self, *events):
         """
@@ -59,6 +58,12 @@ class RegionBox(pn.Column):
         # self.map.zoom(self.selected)
         if self.external_cb:
             self.external_cb()
+
+    def check(self, region):
+        """
+        Initialize the box by addidng region to the selection.
+        """
+        self.boxes[region].value = True
 
     def selection(self) -> list[str]:
         """
