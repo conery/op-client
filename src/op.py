@@ -173,18 +173,23 @@ class OP(metaclass=MetaOP):
 
         Args:
             regions: a list of geographic regions (river names) to use
-            budgets: budget settings (max, increment)
+            budgets: a tuple with budget settings (start, increment, count)
             targets: a list of IDs of targets
             weights: a list of target weights
             mapping: the name of a column mapping file for targets
         '''
-        # print(regions)
-        # print(budgets)
-        # print(targets)
-        # print(weights)
-        # print(mapping)
-        req = f'{server}/optipass/{OP.project}'
-        print(req)
+        req = f'{OP.server_url}/optipass/{OP.project_name}'
+        args = {
+            'regions': regions,
+            'budgets': [str(n) for n in budgets],
+            'targets': targets,
+            'weights': weights or None,
+            'mapping': mapping,
+        }
+        resp = requests.get(req, args)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        print(resp.json())
 
 class DevOP:
     '''

@@ -38,13 +38,22 @@ class BudgetBox(pn.Column):
 
     def values(self):
         """
-        Return the budget settings for the currently selected budget type.
+        Return the budget settings for the currently selected budget type.  Get
+        the widget values from the active budget type, convert them into a tuple
+        of values that will be passed to the optimizer.
 
         Returns:
-          bmax:  the maximum budget to pass to OptiPass
+          bmin:  the starting budget
           binc:  the increment between budget values
+          bcnt:  the number of budget values 
         """
         return self.tabs[self.tabs.active].values()
+    
+    def defined(self):
+        """
+        Return True if the user has defined a budget using the current tab
+        """
+        return self.tabs[self.tabs.active].defined()
     
     def set_value(self, n):
         """
@@ -72,8 +81,6 @@ class BasicBudgetBox(pn.WidgetBox):
         ('$100M', 100000000),
     ]
 
-    increments = 10
-
     def __init__(self):
         super(BasicBudgetBox, self).__init__(margin=(15,0,15,5))
         self.labels = [ x[0] for x in self.levels ]
@@ -100,20 +107,23 @@ class BasicBudgetBox(pn.WidgetBox):
                 self.slider.options = self.labels[:i+1]
                 break
 
+    BUDGET_COUNT = 10
+
     def values(self):
         """
-        Return the selected budget level (based on the slider position) and
-        the number of budgets.  For basic budgets the interval between budgets
-        is computed by dividing the select budget value by the number of increments
-        (a constant defined in the class, currently equal to 10).
-
-        Returns:
-          bmax:  the highest budget to pass to OptiPass
-          binc:  the increment between budgets
+        The basic budget always has the same number of budgets and always
+        starts with $0.  Determine the increment by dividing the max budget
+        in the slider by the number of budgets.
         """
         x = self.map[self.slider.value]
-        return x, (x // self.increments)
-    
+        return 0, x // self.BUDGET_COUNT, self.BUDGET_COUNT
+        
+    def defined(self):
+        """
+        The basic budget is set if the slider is not in the first location.
+        """
+        return self.slider.value != '$0'
+
     def set_value(self, n):
         """
         Set the slider to n
@@ -140,14 +150,20 @@ class FixedBudgetBox(pn.WidgetBox):
 
     def values(self):
         """
-        Return the specified budget amount as both the maximum budget and the
-        budget interval.
+        A fixed budget has one value, returned as the starting budget.  The 
+        the increment is 0 and count is 1.
         """
         s = self.input.value
         if s.startswith('$'):
             s = s[1:]
         n = self.parse_dollar_amount(self.input.value)
-        return n, n
+        return n, 0, 1
+        
+    def defined(self):
+        """
+        The fixed budget is set if the text box is not empty.
+        """
+        return self.parse_dollar_amount(self.input.value) > 0
     
     def set_value(self, n):
         """
@@ -180,10 +196,10 @@ class FixedBudgetBox(pn.WidgetBox):
                 assert len(parts[0]) <= 3 and (len(parts) == 1 or all(len(p) == 3 for p in parts[1:]))
                 res = int(''.join(parts))
             else:
-                res = int(s)
+                res = 0 if s == '' else int(s)
             return res
         except Exception:
-            raise ValueError('unexpected format in dollar amount')
+            return 0
             
 class AdvancedBudgetBox(pn.WidgetBox):
     """
@@ -260,10 +276,16 @@ class AdvancedBudgetBox(pn.WidgetBox):
 
     def values(self):
         """
-        In this widget the maximum budget and budget increment are determined
+        In this widget the budget increment and budget count are determined
         by the values in the corresponding widgets.
         """
-        return self.max_slider.value, self.inc_slider.value
+        return 0, self.inc_slider.value, self.count_input.value
+        
+    def defined(self):
+        """
+        The advance budget is set if the increment is not 0
+        """
+        return self.inc_slider.value > 0
     
     def set_value(self, n):
         """

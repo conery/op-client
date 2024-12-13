@@ -63,7 +63,7 @@ Reason: {}
         """
         self.template.close_modal()
  
-    def show_missing(self, rlist, bmax, tlist):
+    def show_missing(self, rlist, budget, tlist):
         """
         Method called by the OP class when it detects missing parameters (e.g.
         if the user did not select a region or a target).
@@ -71,7 +71,7 @@ Reason: {}
         text = self.missing_params_text
         if len(rlist) == 0:
             text += ' * one or more geographic regions\n'
-        if bmax == 0:
+        if not budget:
             text += ' * a maximum budget\n'
         if len(tlist) == 0:
             text += ' * one or more targets\n'
@@ -92,28 +92,28 @@ Reason: {}
         self.append(pn.pane.Alert(text, alert_type = 'warning'))
         self.template.open_modal()
         
-    def show_params(self, regions, bmax, bstep, targets, weights, mapping):
+    def show_params(self, regions, budgets, targets, weights, mapping):
         """
         Method called to allow the user to review the optimization parameters read from the
         various widgets.  Displays each parameter and two buttons ("Cancel" and "Continue").
 
         Arguments:
           regions:  list of region names
-          bmax:  maximum budget amount
-          bstep:  incremwnt in budget amounts
+          budgets:  a tuple with starting budget, increment, and count
           targets:  list of restoration target names
           weights:  list of target weights (optional)
           mapping:  column mappings (optional)
         """
-        n = bmax // bstep
-        fbmax = OP.format_budget_amount(bmax)
-        fbstep = OP.format_budget_amount(bstep)
+        bstart, binc, bcount = budgets
+        fbmax = OP.format_budget_amount(binc*bcount)
+        fbstep = OP.format_budget_amount(binc)
+        fbstart = OP.format_budget_amount(bstart)
         text = self.preview_message_text
         text += f'  * Regions: {", ".join(regions)}\n\n'
-        if n > 1:
-            text += f'  * {n} budget levels from {fbstep} up to {fbmax} in increments of {fbstep}\n\n'
+        if bcount > 1:
+            text += f'  * {bcount} budget levels from {fbstep} up to {fbmax} in increments of {fbstep}\n\n'
         else:
-            text += f'  * a single budget of {fbmax}\n\n'
+            text += f'  * a single budget of {fbstart}\n\n'
         targets = [t.split(':')[-1] for t in targets]
         if weights:
             targets = [f'{targets[i]} ⨉ {weights[i]}' for i in range(len(targets))]

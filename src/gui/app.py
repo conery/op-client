@@ -125,11 +125,11 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         Callback function invoked when the user clicks the Run Optimizer button.
         """
         regions = self.region_boxes.selection()
-        budget_max, budget_delta = self.budget_box.values()
+        budget = self.budget_box.defined()
         targets = self.target_boxes.selection()
 
-        if len(regions) == 0 or budget_max == 0 or len(targets) == 0:
-            self.info.show_missing(regions, budget_max, targets)
+        if len(regions) == 0 or (not budget) or len(targets) == 0:
+            self.info.show_missing(regions, budget, targets)
             return
         
         if weights := self.target_boxes.weights():
@@ -139,7 +139,7 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             
         mapping = self.target_boxes.mapping()
 
-        self.info.show_params(regions, budget_max, budget_delta, targets, weights, mapping)
+        self.info.show_params(regions, self.budget_box.values(), targets, weights, mapping)
 
     def run_optimizer(self, _):
         """

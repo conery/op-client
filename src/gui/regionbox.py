@@ -69,7 +69,7 @@ class RegionBox(pn.Column):
         """
         Return a list of the names of currently selected regions.
         """
-        return self.selected
+        return list(self.selected)
     
     def add_external_callback(self, f):
         """
