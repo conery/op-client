@@ -181,10 +181,10 @@ class OP(metaclass=MetaOP):
         req = f'{OP.server_url}/optipass/{OP.project_name}'
         args = {
             'regions': regions,
-            'budgets': [str(n) for n in budgets],
+            'budgets': budgets,
             'targets': targets,
             'weights': weights or None,
-            'mapping': mapping,
+            'mapping': [OP.mapping_name,mapping],
         }
         resp = requests.get(req, args)
         if resp.status_code != 200:
