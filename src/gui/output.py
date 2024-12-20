@@ -1,5 +1,7 @@
+from bokeh.models.widgets.tables import NumberFormatter
 import logging
 from op import OP
+import pandas as pd
 import panel as pn
 from .styles import *
 
@@ -29,16 +31,16 @@ class OutputPane(pn.Column):
             self.append(pn.pane.HTML('<h3>ROI Curves</h3>'))
             self.append(self._make_figures_tab(op))
 
-        # self.append(pn.pane.HTML('<h3>Budget Summary</h3>'))
-        # self.gate_count = self.op.summary.gates.apply(len).sum()
-        # if self.gate_count == 0:
-        #     self.append(pn.pane.HTML('<i>No barriers selected -- consider increasing the budget</i>'))
-        # else:
-        #     self.append(self._make_budget_table())
-        #     self.append(pn.Accordion(
-        #         ('Barrier Details', self._make_gate_table()),
-        #         stylesheets = [accordion_style_sheet],
-        #     ))
+        self.append(pn.pane.HTML('<h3>Budget Summary</h3>'))
+        self.gate_count = op.summary.gates.apply(len).sum()
+        if self.gate_count == 0:
+            self.append(pn.pane.HTML('<i>No barriers selected -- consider increasing the budget</i>'))
+        else:
+            self.append(self._make_budget_table(op))
+            self.append(pn.Accordion(
+                ('Barrier Details', self._make_gate_table(op)),
+                stylesheets = [accordion_style_sheet],
+            ))
 
     def _make_title(self, op):
         """
@@ -74,47 +76,30 @@ class OutputPane(pn.Column):
         for p in op.display_figures:
             tabs.append(p)
         return tabs
-
-    def _make_budget_table(self):
+    
+    def _make_budget_table(self, op):
         """
-        Display a table that has one column for each budget level, showing
-        which barriers were included in the solution for that level.  Attach
+        Make the table of benefits for each budget.  Attach
         a callback function that is called when the user clicks on a row
         in the table (the callback updates the map to show gates used in a
         solution).
         """
-        df = self.op.summary[['budget','habitat', 'gates']]
-        colnames = ['Budget', 'Net Gain', 'gates']
-        formatters = { 
-            'Budget': {'type': 'money', 'symbol': '$', 'precision': 0},
-            'Net Gain': NumberFormatter(format='0.0', text_align='center'),
-        }
+        df = op.budget_table()
+        formatters = { col: NumberFormatter(format='0.0', text_align='center') for col in df.columns }
+        formatters['Budget'] = {'type': 'money', 'symbol': '$', 'precision': 0}
         alignment = { 
             'Budget': 'right',
             'Net Gain': 'center',
+            '# Barriers': 'center'
         }
-        df = pd.concat([
-            df,
-            pd.Series(self.op.summary.gates.apply(len))
-        ], axis=1)
-        colnames.append('# Barriers')
-        alignment['# Barriers'] = 'center'
-        for i, t in enumerate(self.op.targets):
-            if t.abbrev in self.op.summary.columns:
-                df = pd.concat([df, self.op.summary[t.abbrev]], axis=1)
-                col = t.short
-                if self.op.weighted:
-                    col += f'⨉{self.op.weights[i]}'
-                colnames.append(col)
-                formatters[col] = NumberFormatter(format='0.0', text_align='center')
-        df.columns = colnames
+
         table = pn.widgets.Tabulator(
             df,
             show_index = False,
             hidden_columns = ['gates'],
-            editors = { c: None for c in colnames },
+            editors = { c: None for c in df.columns },
             text_align = alignment,
-            header_align = {c: 'center' for c in colnames},
+            header_align = {c: 'center' for c in df.columns},
             formatters = formatters,
             selectable = True,
             configuration = {'columnDefaults': {'headerSort': False}},
@@ -123,39 +108,41 @@ class OutputPane(pn.Column):
         self.budget_table = df
         return table
 
-    def _make_gate_table(self):
+    def _make_gate_table(self, op):
         """
         Make a table showing details about gates used in solutions.
         """
         formatters = { }
         alignment = { }
-        df = self.op.table_view()
+        df = op.gate_table()
+        print(df)
+
         hidden = ['Count']
-        for col in df.columns:
-            if col.startswith('$') or col in ['Primary','Dominant']:
-                formatters[col] = {'type': 'tickCross', 'crossElement': ''}
-                alignment[col] = 'center'
-            elif col.endswith('hab'):
-                c = col.replace('_hab','')
-                formatters[c] = NumberFormatter(format='0.0', text_align='center')
-                # alignment[c] = 'center'
-            elif col.endswith('tude'):
-                formatters[col] = NumberFormatter(format='0.00', text_align='center')
-                # alignment[col] = 'right'
-            elif col.endswith('gain'):
-                hidden.append(col)
-            elif col == 'Cost':
-                formatters[col] = {'type': 'money', 'symbol': '$', 'precision': 0}
-                alignment[col] = 'right'
-        colnames = [c.replace('_hab','') for c in df.columns]
-        if self.op.weighted:
-            for i, t in enumerate(self.op.targets):
-                if t.short not in colnames:             # shouldn't happen, but just in case...
-                    continue
-                j = colnames.index(t.short)
-                colnames[j] += f'⨉{self.op.weights[i]}'
-                formatters[colnames[j]] = NumberFormatter(format='0.0', text_align='center')
-        df.columns = colnames
+        # for col in df.columns:
+        #     if col.startswith('$') or col in ['Primary','Dominant']:
+        #         formatters[col] = {'type': 'tickCross', 'crossElement': ''}
+        #         alignment[col] = 'center'
+        #     elif col.endswith('hab'):
+        #         c = col.replace('_hab','')
+        #         formatters[c] = NumberFormatter(format='0.0', text_align='center')
+        #         # alignment[c] = 'center'
+        #     elif col.endswith('tude'):
+        #         formatters[col] = NumberFormatter(format='0.00', text_align='center')
+        #         # alignment[col] = 'right'
+        #     elif col.endswith('gain'):
+        #         hidden.append(col)
+        #     elif col == 'Cost':
+        #         formatters[col] = {'type': 'money', 'symbol': '$', 'precision': 0}
+        #         alignment[col] = 'right'
+        # colnames = [c.replace('_hab','') for c in df.columns]
+        # if self.op.weighted:
+        #     for i, t in enumerate(self.op.targets):
+        #         if t.short not in colnames:             # shouldn't happen, but just in case...
+        #             continue
+        #         j = colnames.index(t.short)
+        #         colnames[j] += f'⨉{self.op.weights[i]}'
+        #         formatters[colnames[j]] = NumberFormatter(format='0.0', text_align='center')
+        # df.columns = colnames
 
         table = pn.widgets.Tabulator(
             df, 

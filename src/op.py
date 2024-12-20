@@ -317,6 +317,78 @@ class OPResult:
         ax.set_title(subtitle, loc='left', fontstyle='oblique', fontsize= 10)
         ax.set_ylabel(axis_label, style='italic', fontsize=10)
         return fig
+    
+    def budget_table(self):
+        """
+        Make a table that has one column for each budget level, showing
+        which barriers were included in the solution for that level. 
+        """
+        df = self.summary[['budget','habitat', 'gates']]
+        colnames = ['Budget', 'Net Gain', 'Gates']
+        df = pd.concat([
+            df,
+            pd.Series(self.summary.gates.apply(len))
+        ], axis=1)
+        colnames.append('# Barriers')
+        for i, t in enumerate(self.targets):
+            target = OP.target_frame.loc[t]
+            if target.name in self.summary.columns:
+                df = pd.concat([df, self.summary[target.name]], axis=1)
+                col = target.short
+                if self.weights:
+                    col += f'⨉{self.weights[i]}'
+                colnames.append(col)
+        df.columns = colnames
+        return df
+    
+    def gate_table(self):
+        """
+        Make a table that has one row per gate with columns that are relevant
+        to the output display
+        """
+
+        filtered = OP.barrier_frame[OP.barrier_frame.region.isin(self.regions)]
+        filtered = filtered.set_index('ID')
+
+        return filtered
+
+        if test:
+            info_cols = other_cols = { }
+        else:
+            info_cols = {
+                'REGION': 'Region',
+                'BarrierType': 'Type',
+                'DSID': 'DSID',
+                'COST': 'Cost',
+            }
+
+            other_cols = {
+                'PrimaryTG': 'Primary',
+                'DominantTG': 'Dominant',
+                'POINT_X': 'Longitude',
+                'POINT_Y': 'Latitude',
+            }
+
+        budget_cols = OP.format_budgets([c for c in self.matrix.columns if isinstance(c,int) and c > 0])
+
+        df = pd.concat([
+            filtered[info_cols.keys()].rename(columns=info_cols),
+            self.matrix.rename(columns=budget_cols),
+            filtered[other_cols.keys()].rename(columns=other_cols),
+        ], axis=1)
+
+        dct = { t.unscaled: t.short+'_hab' for t in self.targets }
+        dct |= { f'GAIN_{t.abbrev}': t.short+'_gain' for t in self.targets }
+        df = df.rename(columns=dct)
+
+        del df[0]
+        df = df[df['count'] > 0].sort_values(by='count', ascending=False).fillna('-')
+        df = df.rename(columns={'count': 'Count'})
+        df = df.reset_index(names=['ID'])
+
+        # df.columns = pd.MultiIndex.from_tuples(df.columns)
+        return df
+
 
 class DevOP:
     '''

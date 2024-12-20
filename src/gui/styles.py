@@ -62,3 +62,9 @@ input_style_sheet = '''.bk-input {
 }
 '''
 
+accordion_style_sheet = ''':host(.solid) .bk-panel-models-layout-Card.accordion
+{
+    background-color: white;
+    border: 0px;
+}
+'''
