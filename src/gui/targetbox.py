@@ -79,12 +79,11 @@ class BasicTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(BasicTargetBox, self).__init__(margin=(10,0,10,5))
-        df = OP.target_frame.set_index('abbrev')
         TargetBox.make_layout(self)
         self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
         for row in self.layout:
             for t in row:
-                s = df.loc[t].long
+                s = OP.target_frame.loc[t].long
                 b = pn.widgets.Checkbox(name=s, styles=box_styles, stylesheets=[box_style_sheet], tags=[t])
                 self.grid.append(b)
         self.append(self.grid)
@@ -118,12 +117,11 @@ class WeightedTargetBox(pn.Column):
         fetched by calling the make_layout function in the Target class.
         """
         super(WeightedTargetBox, self).__init__(margin=(10,0,10,5))
-        df = OP.target_frame.set_index('abbrev')
         TargetBox.make_layout(self)
         self.grid = pn.GridBox(nrows = self.nrows, ncols = self.ncols)
         for row in self.layout:
             for t in row:
-                s = df.loc[t].long
+                s = OP.target_frame.loc[t].long
                 w = pn.Row()
                 w.append(pn.widgets.TextInput(name='', placeholder='', width=25, align='center', stylesheets=[input_style_sheet], tags=[t]))
                 w.append(pn.pane.HTML(s))

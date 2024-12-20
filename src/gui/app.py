@@ -4,12 +4,15 @@
 import logging
 import panel as pn
 
-from op import OP, DevOP
+from op import OP, OPResult, DevOP, OPServerError
+
 from gui.tgmap import TGMap
 from gui.regionbox import RegionBox
 from gui.budgets import BudgetBox
 from gui.targetbox import TargetBox
 from gui.infobox import InfoBox
+from gui.output import OutputPane
+
 from .styles import *
 
 pn.extension('gridstack', 'tabulator', 'floatpanel')
@@ -53,7 +56,7 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         self.optimize_button = pn.widgets.Button(name='Run Optimizer', stylesheets=[button_style_sheet])
  
-        self.info = InfoBox(self, self.run_optimizer)
+        self.info = InfoBox(self, self.run_cb)
         self.modal.append(self.info)
 
         welcome_tab = pn.Column(
@@ -110,7 +113,8 @@ class TideGatesApp(pn.template.BootstrapTemplate):
             self.region_boxes.check(r)
         self.budget_box.set_value(DevOP.default_budget())
         self.target_boxes.set_selection(DevOP.default_targets())
-
+        if DevOP.results_dir():
+            self.run_optimizer()
         self.tabs.active = OP.initial_tab
     
     def section_head(self, s, b = None):
@@ -141,17 +145,45 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         self.info.show_params(regions, self.budget_box.values(), targets, weights, mapping)
 
-    def run_optimizer(self, _):
+    def run_cb(self, _):
         """
         Callback function invoked when the user clicks the Continue button after verifying
         the parameter options.
 
-        Use the settings in the budget widgets to create the URL to pass to the server.
+        Wrap the call to the function that runs the optimizer in code that shows the loading
+        icon and opens a message when the function returns.
         """
-        OP.run_optimizer(
+        try:
+            self.close_modal()
+            self.main[0].loading = True
+            self.run_optimizer()
+            self.main[0].loading = False
+            self.info.show_success()
+        except OPServerError as err:
+            self.main[0].loading = False
+            self.info.show_fail(err)
+
+    def run_optimizer(self):
+        """
+        Use the settings in the widgets to run OptiPass, save the results
+        in the output tab.
+        """
+        params = [
             self.region_boxes.selection(),
             self.budget_box.values(),
             self.target_boxes.selection(),
             self.target_boxes.weights(),
             self.target_boxes.mapping(),
-        )
+        ]
+
+        resp = OP.run_optimizer(*params)
+
+        params += resp
+        res = OPResult(*params)
+        output = OutputPane(res)
+
+        # output.make_dots(self.map.graphic())
+        # self.region_boxes.add_external_callback(output.hide_dots)
+        self.tabs[3] = ('Output', output)
+        # self.tabs[4] = ('Download', DownloadPane(output))
+

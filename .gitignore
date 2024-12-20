@@ -165,4 +165,6 @@ cython_debug/
 oregon/
 sandbox/
 *.graffle
-opdevrc
+opdemorc
+oporerc
+

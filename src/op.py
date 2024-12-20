@@ -9,6 +9,11 @@ import os
 import pandas as pd
 import requests
 
+from bokeh.plotting import figure
+from bokeh.models import NumeralTickFormatter, HoverTool, Title
+
+import matplotlib.pyplot as plt
+
 class OPServerError(Exception):
 
     def __init__(self, resp):
@@ -85,9 +90,16 @@ class MetaOP(type):
           project: the name of a data set on the server
           tab: the tab to show when starting the app
         '''
+        logging.info(f'Connecting to {server}')
+        
         req = f'{server}/projects'
+        logging.info(f'request: {req}')
         resp = requests.get(req)
-        if resp.status_code != 200 or project not in resp.json():
+        if resp.status_code == 502:
+            raise requests.exceptions.ConnectionError()
+        elif resp.status_code != 200:
+            raise OPServerError(resp)
+        elif project not in resp.json():
             raise ValueError(f'unknown project: {project}')
         cls._server_url = server
         cls._project_name = project
@@ -98,7 +110,7 @@ class MetaOP(type):
             raise OPServerError(resp)
         dct = resp.json()
         buf = StringIO(dct['targets'])
-        cls._target_frame = pd.read_csv(buf)
+        cls._target_frame = pd.read_csv(buf).set_index('abbrev')
         cls._target_layout = dct['layout'].split('\n')
 
         req = f'{server}/colnames/{project}'
@@ -177,6 +189,10 @@ class OP(metaclass=MetaOP):
             targets: a list of IDs of targets
             weights: a list of target weights
             mapping: the name of a column mapping file for targets
+
+        Returns:
+            summary: data frame with one row per budget level
+            matrix:  data frame with one row per barrier
         '''
         req = f'{OP.server_url}/optipass/{OP.project_name}'
         args = {
@@ -186,10 +202,121 @@ class OP(metaclass=MetaOP):
             'weights': weights or None,
             'mapping': [OP.mapping_name,mapping],
         }
+        if token := DevOP.results_dir():
+            args['tempdir'] = token
+
         resp = requests.get(req, args)
         if resp.status_code != 200:
             raise OPServerError(resp)
-        print(resp.json())
+        
+        dct = resp.json()
+        buf = StringIO(dct['summary'])
+        summary = pd.read_csv(buf)
+        buf = StringIO(dct['matrix'])
+        matrix = pd.read_csv(buf)
+
+        return summary, matrix
+    
+class OPResult:
+    """
+    Create an instance of this class each time the server returns a
+    set of results from an optimization run.
+
+    Pass the constructor the dictionaries returned by the server and
+    the widget settings (region names, budget levels, target selection)
+    so it can create plots and output tables.
+    """
+
+    def __init__(self, regions, budgets, targets, weights, mapping, summary, matrix):
+        self.summary = pd.DataFrame(summary)
+        self.matrix = pd.DataFrame(matrix)
+        self.regions = regions
+        self.bmin, self.binc, self.bcount = budgets
+        self.targets = targets
+        self.weights = weights
+        self.mapping = mapping
+        self.display_figures = []
+        self.download_figures = []
+
+    def make_roi_curves(self):
+        """
+        Generate ROI plots based on computed benefits.
+        """
+
+        climate = None
+
+        subtitle = 'Region: ' if len(self.regions) == 1 else 'Regions: '
+        subtitle +=  ', '.join(self.regions)
+
+        for i, t in enumerate(self.targets):
+            target = OP.target_frame.loc[t]
+            title = target.long
+            if target.infra:
+                title += f' ({self.mapping} {OP.mapping_name})'
+            if self.weights:
+                title += f' ⨉ {int(self.weights[i])}'
+            f = self.bokeh_figure(self.summary.budget, self.summary[target.name], title, subtitle, target.label)
+            self.display_figures.append((target.short, f))
+            f = self.pyplot_figure(self.summary.budget, self.summary[target.name], title, subtitle, target.label)
+            self.download_figures.append((target.short, f))
+
+        if len(self.targets) > 1:
+            title = 'Combined Potential Benefit'
+            if climate:
+                title += f' ({OP.mapping} {OP.mapping_name})'
+            f = self.bokeh_figure(self.summary.budget, self.summary.netgain, title, subtitle, 'Weighted Net Gain')
+            self.display_figures.insert(0, ('Net', f))
+            f = self.pyplot_figure(self.summary.budget, self.summary.netgain, title, subtitle, 'Weighted Net Gain')
+            self.download_figures.insert(0, ('Net', f))
+
+    def bokeh_figure(self, x, y, title, subtitle, axis_label):
+        H = 400
+        W = 400
+        LW = 2
+        D = 10
+
+        print('bokeh fig')
+        print('x', list(x))
+        print('y', list(y))
+    
+        f = figure(
+            # title=title, 
+            x_axis_label='Budget', 
+            y_axis_label=axis_label,
+            width=W,
+            height=H,
+            tools = [HoverTool(mode='vline')],
+            tooltips = 'Budget @x{$0.0a}, Benefit @y{0.0}',
+        )
+        f.line(x, y, line_width=LW)
+        f.circle(x, y, fill_color='white', size=D)
+        f.add_layout(Title(text=subtitle, text_font_style='italic'), 'above')
+        f.add_layout(Title(text=title), 'above')
+        f.xaxis.formatter = NumeralTickFormatter(format='$0.0a')
+        f.toolbar_location = None
+        return f
+    
+    def pyplot_figure(self, x, y, title, subtitle, axis_label):
+
+        def tick_fmt(n, x):
+            return OP.format_budget_amount(n)
+
+        LC = '#3c76af'
+        H = 4
+        W = 4
+        LW = 1.25
+        D = 7
+
+        fig, ax = plt.subplots(figsize=(H,W))
+        fig.suptitle(title, fontsize=11, fontweight='bold')
+
+        ax.grid(linestyle='--', linewidth=0.5)
+        ax.plot(x, y, color=LC, linewidth=LW)
+        ax.plot(x, y, 'o', markerfacecolor='white', markeredgecolor=LC, markersize=D, markeredgewidth=0.75)
+        ax.xaxis.set_major_formatter(tick_fmt)
+        ax.set_title(subtitle, loc='left', fontstyle='oblique', fontsize= 10)
+        ax.set_ylabel(axis_label, style='italic', fontsize=10)
+        return fig
 
 class DevOP:
     '''
@@ -213,3 +340,7 @@ class DevOP:
     @staticmethod
     def default_targets():
         return DevOP.default_list('OPTARGETS')
+
+    @staticmethod
+    def results_dir():
+        return os.getenv('OPTMPDIR')
