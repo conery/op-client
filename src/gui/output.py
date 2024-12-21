@@ -87,6 +87,7 @@ class OutputPane(pn.Column):
         df = op.budget_table()
         formatters = { col: NumberFormatter(format='0.0', text_align='center') for col in df.columns }
         formatters['Budget'] = {'type': 'money', 'symbol': '$', 'precision': 0}
+        formatters['# Barriers'] = NumberFormatter(format='0', text_align='center')
         alignment = { 
             'Budget': 'right',
             'Net Gain': 'center',
@@ -148,7 +149,7 @@ class OutputPane(pn.Column):
 
         table = pn.widgets.Tabulator(
             df, 
-            show_index=False, 
+            show_index=True, 
             frozen_columns=['ID'],
             hidden_columns=['count'],
             formatters=formatters,

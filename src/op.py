@@ -256,8 +256,6 @@ class OPResult:
             title = target.long
             if target.infra:
                 title += f' ({self.mapping} {OP.mapping_name})'
-            if self.weights:
-                title += f' ⨉ {int(self.weights[i])}'
             f = self.bokeh_figure(self.summary.budget, self.summary[target.name], title, subtitle, target.label)
             self.display_figures.append((target.short, f))
             f = self.pyplot_figure(self.summary.budget, self.summary[target.name], title, subtitle, target.label)
@@ -267,6 +265,11 @@ class OPResult:
             title = 'Combined Potential Benefit'
             if climate:
                 title += f' ({OP.mapping} {OP.mapping_name})'
+            if self.weights:
+                subtitle += '\nTargets:'
+                for i, t in enumerate(self.targets):
+                    target = OP.target_frame.loc[t]
+                    subtitle += f' {target.short} ⨉ {int(self.weights[i])}'
             f = self.bokeh_figure(self.summary.budget, self.summary.netgain, title, subtitle, 'Weighted Net Gain')
             self.display_figures.insert(0, ('Net', f))
             f = self.pyplot_figure(self.summary.budget, self.summary.netgain, title, subtitle, 'Weighted Net Gain')
@@ -335,8 +338,8 @@ class OPResult:
             if target.name in self.summary.columns:
                 df = pd.concat([df, self.summary[target.name]], axis=1)
                 col = target.short
-                if self.weights:
-                    col += f'⨉{self.weights[i]}'
+                # if self.weights:
+                #     col += f'⨉{self.weights[i]}'
                 colnames.append(col)
         df.columns = colnames
         return df
