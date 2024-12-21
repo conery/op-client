@@ -25,6 +25,15 @@ tab_style_sheet = '''.bk-tab {
 }
 '''
 
+output_tab_style_sheet = '''.bk-tab {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    font-size: 1.0em;
+    color: #3171B0;
+    font-weight: 600;
+    text-align: left;
+}
+'''
+
 box_style_sheet = '''input[type="checkbox" i]
 {
     margin-left: 10px;       /* space to left of checkbox */

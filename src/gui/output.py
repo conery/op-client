@@ -24,7 +24,7 @@ class OutputPane(pn.Column):
          """
         super(OutputPane, self).__init__()
 
-        self.append(pn.pane.HTML('<h3>Optimization Complete</h3>', styles=header_styles))
+        self.append(pn.pane.HTML('<h3>Optimization Results</h3>', styles=header_styles))
         self.append(self._make_title(op))
 
         if op.bcount > 1:
@@ -70,7 +70,7 @@ class OutputPane(pn.Column):
         """
         tabs = pn.Tabs(
             tabs_location='left',
-            stylesheets = [tab_style_sheet],
+            stylesheets = [output_tab_style_sheet],
         )
         op.make_roi_curves()
         for p in op.display_figures:
@@ -115,13 +115,13 @@ class OutputPane(pn.Column):
         formatters = { }
         alignment = { }
         df = op.gate_table()
-        print(df)
 
-        hidden = ['Count']
-        # for col in df.columns:
-        #     if col.startswith('$') or col in ['Primary','Dominant']:
-        #         formatters[col] = {'type': 'tickCross', 'crossElement': ''}
-        #         alignment[col] = 'center'
+        df.columns = [OP.format_budget_amount(int(s)) if s.isdigit() else s for s in df.columns]
+
+        for col in df.columns:
+            if col.startswith('$') or col in ['Primary','Dominant']:
+                formatters[col] = {'type': 'tickCross', 'crossElement': ''}
+                alignment[col] = 'center'
         #     elif col.endswith('hab'):
         #         c = col.replace('_hab','')
         #         formatters[c] = NumberFormatter(format='0.0', text_align='center')
@@ -131,9 +131,10 @@ class OutputPane(pn.Column):
         #         # alignment[col] = 'right'
         #     elif col.endswith('gain'):
         #         hidden.append(col)
-        #     elif col == 'Cost':
-        #         formatters[col] = {'type': 'money', 'symbol': '$', 'precision': 0}
-        #         alignment[col] = 'right'
+            elif col == 'Cost':
+                formatters[col] = {'type': 'money', 'symbol': '$', 'precision': 0}
+                alignment[col] = 'right'
+
         # colnames = [c.replace('_hab','') for c in df.columns]
         # if self.op.weighted:
         #     for i, t in enumerate(self.op.targets):
@@ -144,11 +145,12 @@ class OutputPane(pn.Column):
         #         formatters[colnames[j]] = NumberFormatter(format='0.0', text_align='center')
         # df.columns = colnames
 
+
         table = pn.widgets.Tabulator(
             df, 
             show_index=False, 
             frozen_columns=['ID'],
-            hidden_columns=hidden,
+            hidden_columns=['count'],
             formatters=formatters,
             text_align=alignment,
             configuration={'columnDefaults': {'headerSort': False}},

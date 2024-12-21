@@ -132,7 +132,7 @@ class MetaOP(type):
         if resp.status_code != 200:
             raise OPServerError(resp)
         buf = StringIO(resp.json()['barriers'])
-        cls._barrier_frame = pd.read_csv(buf)
+        cls._barrier_frame = pd.read_csv(buf).set_index('ID')
 
         total_cost = cls._barrier_frame[['region','cost']].groupby('region').sum()
         cls._region_names = sorted(list(total_cost.index))
@@ -213,7 +213,7 @@ class OP(metaclass=MetaOP):
         buf = StringIO(dct['summary'])
         summary = pd.read_csv(buf)
         buf = StringIO(dct['matrix'])
-        matrix = pd.read_csv(buf)
+        matrix = pd.read_csv(buf).set_index('ID')
 
         return summary, matrix
     
@@ -237,6 +237,9 @@ class OPResult:
         self.mapping = mapping
         self.display_figures = []
         self.download_figures = []
+
+        # The 'gates' column is a string, need to convert it to a list
+        self.summary.gates = summary.gates.map(lambda s: json.loads(s.replace("'",'"')))
 
     def make_roi_curves(self):
         """
@@ -275,10 +278,6 @@ class OPResult:
         LW = 2
         D = 10
 
-        print('bokeh fig')
-        print('x', list(x))
-        print('y', list(y))
-    
         f = figure(
             # title=title, 
             x_axis_label='Budget', 
@@ -294,6 +293,7 @@ class OPResult:
         f.add_layout(Title(text=title), 'above')
         f.xaxis.formatter = NumeralTickFormatter(format='$0.0a')
         f.toolbar_location = None
+
         return f
     
     def pyplot_figure(self, x, y, title, subtitle, axis_label):
@@ -323,8 +323,8 @@ class OPResult:
         Make a table that has one column for each budget level, showing
         which barriers were included in the solution for that level. 
         """
-        df = self.summary[['budget','habitat', 'gates']]
-        colnames = ['Budget', 'Net Gain', 'Gates']
+        df = self.summary[['budget','netgain']]
+        colnames = ['Budget', 'Net Gain']
         df = pd.concat([
             df,
             pd.Series(self.summary.gates.apply(len))
@@ -346,47 +346,24 @@ class OPResult:
         Make a table that has one row per gate with columns that are relevant
         to the output display
         """
-
         filtered = OP.barrier_frame[OP.barrier_frame.region.isin(self.regions)]
-        filtered = filtered.set_index('ID')
 
-        return filtered
-
-        if test:
-            info_cols = other_cols = { }
-        else:
-            info_cols = {
-                'REGION': 'Region',
-                'BarrierType': 'Type',
-                'DSID': 'DSID',
-                'COST': 'Cost',
-            }
-
-            other_cols = {
-                'PrimaryTG': 'Primary',
-                'DominantTG': 'Dominant',
-                'POINT_X': 'Longitude',
-                'POINT_Y': 'Latitude',
-            }
-
-        budget_cols = OP.format_budgets([c for c in self.matrix.columns if isinstance(c,int) and c > 0])
+        col1 = [c for c in ['region','cost','DSID','type'] if c in filtered.columns]
+        budget_cols = [c for c in self.matrix.columns if c.isnumeric() and c > '0']
+        target_cols = [c for c in self.matrix.columns if len(c) == 2]
+        col2 = [c for c in ['primary','dominant','X','Y'] if c in filtered.columns]
 
         df = pd.concat([
-            filtered[info_cols.keys()].rename(columns=info_cols),
-            self.matrix.rename(columns=budget_cols),
-            filtered[other_cols.keys()].rename(columns=other_cols),
+            filtered[col1],
+            self.matrix[budget_cols],
+            self.matrix['count'],
+            self.matrix[target_cols],
+            filtered[col2]
         ], axis=1)
 
-        dct = { t.unscaled: t.short+'_hab' for t in self.targets }
-        dct |= { f'GAIN_{t.abbrev}': t.short+'_gain' for t in self.targets }
-        df = df.rename(columns=dct)
-
-        del df[0]
         df = df[df['count'] > 0].sort_values(by='count', ascending=False).fillna('-')
-        df = df.rename(columns={'count': 'Count'})
-        df = df.reset_index(names=['ID'])
+        df.columns = [s.capitalize() if s in ['region','cost','type','primary','dominant'] else s for s in df.columns]
 
-        # df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
 
