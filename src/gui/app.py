@@ -45,6 +45,9 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         """
         super(TideGatesApp, self).__init__(**params)
 
+        # self.header.append(pn.pane.HTML('<p>Hello</p>'))
+        self.header.append(pn.widgets.Select(options=['Demo','Oregon']))
+
         self.map = TGMap.init()
         self.map_pane = pn.Column(
             pn.panel(self.map.graphic())
@@ -61,12 +64,14 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         welcome_tab = pn.Column(
             self.section_head('Welcome'),
-            pn.panel("welcome message")
+            pn.pane.HTML(OP.fetch_html_file('welcome.html')),
         )
 
         help_tab = pn.Column(
             self.section_head('Instructions'),
-            pn.panel("instructions")
+            pn.pane.HTML(OP.fetch_html_file('help1.html')),
+            pn.pane.PNG(OP.fetch_image('ROI.png'), width=400),
+            pn.pane.HTML(OP.fetch_html_file('help2.html')),
         )
 
         start_tab = pn.Column(
@@ -180,10 +185,9 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         params += resp
         res = OPResult(*params)
-        output = OutputPane(res)
+        output = OutputPane(res, self.map)
 
-        # output.make_dots(self.map.graphic())
-        # self.region_boxes.add_external_callback(output.hide_dots)
+        self.region_boxes.add_external_callback(output.hide_dots)
         self.tabs[3] = ('Output', output)
         # self.tabs[4] = ('Download', DownloadPane(output))
 

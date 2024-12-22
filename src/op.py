@@ -170,6 +170,23 @@ class OP(metaclass=MetaOP):
         if s.endswith('.0'):
             s = s[:-2]
         return s+suffix
+    
+    @staticmethod
+    def fetch_html_file(fn):
+        req = f'{OP.server_url}/html/{OP.project_name}/{fn}'
+        resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        return resp.json()
+
+    @staticmethod
+    def fetch_image(fn):
+        req = f'{OP.server_url}/image/{OP.project_name}/{fn}'
+        resp = requests.get(req)
+        if resp.status_code != 200:
+            print(resp)
+            raise OPServerError(resp)
+        return resp.content
 
     @staticmethod
     def run_optimizer(
@@ -326,8 +343,8 @@ class OPResult:
         Make a table that has one column for each budget level, showing
         which barriers were included in the solution for that level. 
         """
-        df = self.summary[['budget','netgain']]
-        colnames = ['Budget', 'Net Gain']
+        df = self.summary[['budget','netgain', 'gates']]
+        colnames = ['Budget', 'Net Gain', 'gates']
         df = pd.concat([
             df,
             pd.Series(self.summary.gates.apply(len))

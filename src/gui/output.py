@@ -12,7 +12,7 @@ class OutputPane(pn.Column):
     level display.
     """
 
-    def __init__(self, op):
+    def __init__(self, op, tgmap):
         """
         Format the output from OptiPass.
         The first part of the panel has a set of ROI curves
@@ -36,7 +36,7 @@ class OutputPane(pn.Column):
         if self.gate_count == 0:
             self.append(pn.pane.HTML('<i>No barriers selected -- consider increasing the budget</i>'))
         else:
-            self.append(self._make_budget_table(op))
+            self.append(self._make_budget_table(op, tgmap))
             self.append(pn.Accordion(
                 ('Barrier Details', self._make_gate_table(op)),
                 stylesheets = [accordion_style_sheet],
@@ -77,7 +77,7 @@ class OutputPane(pn.Column):
             tabs.append(p)
         return tabs
     
-    def _make_budget_table(self, op):
+    def _make_budget_table(self, op, tgmap):
         """
         Make the table of benefits for each budget.  Attach
         a callback function that is called when the user clicks on a row
@@ -105,8 +105,10 @@ class OutputPane(pn.Column):
             selectable = True,
             configuration = {'columnDefaults': {'headerSort': False}},
         )
-        table.on_click(self.budget_table_cb)
         self.budget_table = df
+        self.make_dots(table, op, tgmap)
+        table.on_click(self.budget_table_cb)
+
         return table
 
     def _make_gate_table(self, op):
@@ -123,29 +125,9 @@ class OutputPane(pn.Column):
             if col.startswith('$') or col in ['Primary','Dominant']:
                 formatters[col] = {'type': 'tickCross', 'crossElement': ''}
                 alignment[col] = 'center'
-        #     elif col.endswith('hab'):
-        #         c = col.replace('_hab','')
-        #         formatters[c] = NumberFormatter(format='0.0', text_align='center')
-        #         # alignment[c] = 'center'
-        #     elif col.endswith('tude'):
-        #         formatters[col] = NumberFormatter(format='0.00', text_align='center')
-        #         # alignment[col] = 'right'
-        #     elif col.endswith('gain'):
-        #         hidden.append(col)
             elif col == 'Cost':
                 formatters[col] = {'type': 'money', 'symbol': '$', 'precision': 0}
                 alignment[col] = 'right'
-
-        # colnames = [c.replace('_hab','') for c in df.columns]
-        # if self.op.weighted:
-        #     for i, t in enumerate(self.op.targets):
-        #         if t.short not in colnames:             # shouldn't happen, but just in case...
-        #             continue
-        #         j = colnames.index(t.short)
-        #         colnames[j] += f'⨉{self.op.weights[i]}'
-        #         formatters[colnames[j]] = NumberFormatter(format='0.0', text_align='center')
-        # df.columns = colnames
-
 
         table = pn.widgets.Tabulator(
             df, 
@@ -162,22 +144,18 @@ class OutputPane(pn.Column):
         self.gate_table = df
         return table
     
-    def make_dots(self, plot):
+    def make_dots(self, plot, op, tgmap):
         """
         Called after the output panel is initialized, make a set of glyphs to display
         for each budget level.
         """
-        if hasattr(self, 'budget_table'):
-            self.selected_row = None
-            self.dots = []
-            for row in self.budget_table.itertuples():
-                df = self.bf.map_info[self.bf.data.BARID.isin(row.gates)]
-                c = plot.circle_dot('x', 'y', size=12, line_color='blue', fill_color='white', source=df)
-                # c = plot.star_dot('x', 'y', size=20, line_color='blue', fill_color='white', source=df)
-                # c = plot.star('x', 'y', size=12, color='blue', source=df)
-                # c = plot.hex('x', 'y', size=12, color='green', source=df)
-                c.visible = False
-                self.dots.append(c)
+        self.selected_row = None
+        self.dots = []
+        for name, row in self.budget_table.iterrows():
+            df = tgmap.map_coords().loc[row.gates]
+            c = tgmap.map.circle_dot('x', 'y', size=12, line_color='blue', fill_color='white', source=df)
+            c.visible = False
+            self.dots.append(c)
 
     def budget_table_cb(self, e):
         """
