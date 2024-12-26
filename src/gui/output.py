@@ -1,8 +1,11 @@
 from bokeh.models.widgets.tables import NumberFormatter
-import logging
+from bokeh.io import save as savehtml
 from op import OP
 import pandas as pd
 import panel as pn
+from pathlib import Path
+from shutil import make_archive, rmtree
+
 from .styles import *
 
 class OutputPane(pn.Column):
@@ -176,3 +179,156 @@ class OutputPane(pn.Column):
         if self.selected_row:
             self.dots[self.selected_row].visible = False
         self.selected_row = None
+
+class DownloadPane(pn.Column):
+    """
+    After OptiPass has completed the last optimization run the GUI creates
+    an instance of this class and saves it in the Download tab of the top 
+    level display.
+    """
+
+    NB = 'Net benefit plot'
+    IT = 'Individual target plots'
+    BS = 'Budget summary table'
+    BD = 'Barrier detail table'
+
+    def __init__(self, op):
+        """
+        Display a set of checkboxes for the user to select what sort of data to
+        include in a zip file.  If the gate table is not empty enable table downloads.
+        Check the output panel to see which plots were created and to enable the
+        net benefit plot if there is one.
+
+        The pane also has a form to allow the user to enter the name of the download
+        file, the format for the figures, and a button to click when they are ready
+        to download the data.
+
+        Arguments:
+          op:  the OPResult object containing data tables and plots
+        """
+        super(DownloadPane, self).__init__()
+        self.op = op
+        self.folder_name = self._make_folder_name()
+
+        self.grid = pn.GridBox(ncols=2)
+        self.boxes = { }
+        for x in [self.NB, self.BS, self.IT, self.BD]:
+            b = pn.widgets.Checkbox(name=x, styles=box_styles, stylesheets=[box_style_sheet])
+            if x in [self.NB, self.IT]:
+                b.disabled = True
+                b.value = False
+            else:
+                b.value = True
+            self.boxes[x] = b
+            self.grid.objects.append(b)
+
+        self.filename_input = pn.widgets.TextInput(
+            name = '', 
+            value = self.folder_name,
+        )
+
+        self.image_type = pn.widgets.RadioBoxGroup(name='IFF', options=['HTML','PDF','PNG','JPEG'], inline=True)
+
+        self.make_archive_button = pn.widgets.Button(name='Create Output Folder', stylesheets=[button_style_sheet])
+        self.make_archive_button.on_click(self._archive_cb)
+
+        self.append(pn.pane.HTML('<h3>Save Outputs</h3>', styles=header_styles))
+        if len(self.op.matrix) > 0:
+            self.append(pn.pane.HTML('<b>Items to Include in the Output Folder:</b>')),
+            self.append(self.grid)
+            self.append(pn.Row(
+                pn.pane.HTML('<b>Image File Format:</b>'),
+                self.image_type,
+                margin=(20,0,0,0),
+            ))
+            self.append(pn.Row(
+                pn.pane.HTML('<b>Output Folder Name:</b>'),
+                self.filename_input,
+                margin=(20,0,0,0),
+            ))
+            self.append(self.make_archive_button)
+            self.append(pn.pane.HTML('<p>placeholder</p>', visible=False))
+
+        # if there are figures at least one of them is an individual target, so enable
+        # that option; if there is a net benefit figure it's the first figure, enable it
+        # if it's there
+
+        if len(self.op.display_figures) > 0:
+            if self.op.display_figures[0][0] == 'Net':
+                self.boxes[self.NB].value = True
+                self.boxes[self.NB].disabled = False
+            self.boxes[self.IT].value = True
+            self.boxes[self.IT].disabled = False
+
+    def _make_folder_name(self):
+        """
+        Use the region names, target names, and budget range to create the default name of the zip file.
+        """
+        parts = [s[:3] for s in self.op.regions]
+        lst = self.op.targets
+        if self.op.weights:
+            lst = [f'{lst[i]}x{self.op.weights[i]}' for i in range(len(lst))]
+        parts.extend(lst)
+        parts.append(OP.format_budget_amount(self.op.binc*self.op.bcount)[1:])
+        if self.op.mapping:
+            parts.append(self.op.mapping)
+        return '_'.join(parts)
+
+    def _archive_cb(self, e):
+        """
+        Function called when the user clicks the Download button.  Create the output
+        folder and compress it.  When the archive is ready, display a FileDownload
+        widget with a button that starts the download.
+        """
+        if not any([x.value for x in self.boxes.values()]):
+            return
+        self.loading = True
+        base = self._make_archive_dir()
+        self._save_files(base)
+        p = make_archive(base, 'zip', base)
+        self.loading = False
+        self[-1] = pn.widgets.FileDownload(file=p, filename=self.filename+'.zip', stylesheets=[button_style_sheet])
+
+    def _make_archive_dir(self):
+        """
+        Create an empty directory for the download, using the name in the form.
+        """
+        self.filename = self.filename_input.value_input or self.filename_input.value
+        archive_dir = Path.cwd() / 'tmp' / self.filename
+        if Path.exists(archive_dir):
+            rmtree(archive_dir)
+        Path.mkdir(archive_dir)
+        return archive_dir
+
+    def _save_files(self, loc):
+        """
+        Write the tables and figures to the download directory.
+
+        Arguments:
+          loc:  the path to the directory.
+        """
+        figures = self.op.display_figures if self.image_type.value == 'HTML' else self.op.download_figures
+        for name, fig in figures:
+            if name == 'Net' and not self.boxes[self.NB].value:
+                continue
+            if name != 'Net' and not self.boxes[self.IT].value:
+                continue
+            if self.image_type.value == 'HTML':
+                savehtml(fig, filename=loc/f'{name}.html')
+            else:
+                ext = self.image_type.value.lower()
+                fn = loc/f'{name}.{ext}'
+                fig.savefig(fn, bbox_inches='tight')
+        if self.boxes[self.BS].value:
+            df = self.op.summary.drop(['gates'], axis=1)
+            df.to_csv(
+                loc/'budget_summary.csv', 
+                index=False,
+                float_format=lambda n: round(n,2)
+            )
+        if self.boxes[self.BD].value:
+            self.op.matrix.to_csv(
+                loc/'barrier_details.csv',
+                index=False,
+                float_format=lambda n: round(n,2)
+            )

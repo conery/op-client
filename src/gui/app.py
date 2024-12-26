@@ -11,7 +11,7 @@ from gui.regionbox import RegionBox
 from gui.budgets import BudgetBox
 from gui.targetbox import TargetBox
 from gui.infobox import InfoBox
-from gui.output import OutputPane
+from gui.output import OutputPane, DownloadPane
 
 from .styles import *
 
@@ -205,7 +205,7 @@ class TideGatesApp(pn.template.BootstrapTemplate):
 
         self.region_boxes.add_external_callback(output.hide_dots)
         self.tabs[3] = ('Output', output)
-        # self.tabs[4] = ('Download', DownloadPane(output))
+        self.tabs[4] = ('Download', DownloadPane(res))
 
     def map_help_cb(self, _):
         """
