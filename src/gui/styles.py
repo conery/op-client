@@ -77,3 +77,13 @@ accordion_style_sheet = ''':host(.solid) .bk-panel-models-layout-Card.accordion
     border: 0px;
 }
 '''
+
+help_button_style_sheet = ''':host(.solid) .bk-btn
+{
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #3171B0;
+    padding: 0px;
+    margin-top: 12px;
+}
+'''

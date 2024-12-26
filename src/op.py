@@ -343,8 +343,8 @@ class OPResult:
         Make a table that has one column for each budget level, showing
         which barriers were included in the solution for that level. 
         """
-        df = self.summary[['budget','netgain', 'gates']]
-        colnames = ['Budget', 'Net Gain', 'gates']
+        df = self.summary[['budget', 'gates']]
+        colnames = ['Budget', 'gates']
         df = pd.concat([
             df,
             pd.Series(self.summary.gates.apply(len))
@@ -358,6 +358,11 @@ class OPResult:
                 # if self.weights:
                 #     col += f'⨉{self.weights[i]}'
                 colnames.append(col)
+        df = pd.concat([
+            df,
+            self.summary[['wph','netgain']]
+        ], axis=1)
+        colnames += ['WPH','Net Gain']
         df.columns = colnames
         return df
     
