@@ -80,15 +80,21 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         self.climate_help_button = pn.widgets.Button(name='ℹ️', stylesheets = [help_button_style_sheet])
         self.climate_help_button.on_click(self.climate_help_cb)
 
+        self.tab_height = int(self.map.graphic().height * 1.05)
+
         welcome_tab = pn.Column(
             self.section_head('Welcome'),
             pn.pane.HTML(OP.fetch_html_file('welcome.html')),
+            height = self.tab_height,
+            scroll = True,
         )
 
         help_tab = pn.Column(
             self.section_head('Instructions'),
             pn.pane.HTML(OP.fetch_html_file('help.html')),
-        )
+            height = self.tab_height,
+            scroll = True,
+         )
 
         start_tab = pn.Column(
             self.section_head('Geographic Regions', self.region_help_button),
@@ -204,8 +210,8 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         output = OutputPane(res, self.map)
 
         self.region_boxes.add_external_callback(output.hide_dots)
-        self.tabs[3] = ('Output', output)
-        self.tabs[4] = ('Download', DownloadPane(res))
+        self.tabs[3] = ('Output', pn.Column(output, height=self.tab_height, scroll=True))
+        self.tabs[4] = ('Download', pn.Column(DownloadPane(res), height=self.tab_height, scroll=True))
 
     def map_help_cb(self, _):
         """

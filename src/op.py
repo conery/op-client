@@ -179,14 +179,14 @@ class OP(metaclass=MetaOP):
             raise OPServerError(resp)
         return resp.json()
 
-    @staticmethod
-    def fetch_image(fn):
-        req = f'{OP.server_url}/image/{OP.project_name}/{fn}'
-        resp = requests.get(req)
-        if resp.status_code != 200:
-            print(resp)
-            raise OPServerError(resp)
-        return resp.content
+    # @staticmethod
+    # def fetch_image(fn):
+    #     req = f'{OP.server_url}/image/{OP.project_name}/{fn}'
+    #     resp = requests.get(req)
+    #     if resp.status_code != 200:
+    #         print(resp)
+    #         raise OPServerError(resp)
+    #     return resp.content
 
     @staticmethod
     def run_optimizer(
