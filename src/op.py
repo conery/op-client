@@ -111,7 +111,7 @@ class MetaOP(type):
         dct = resp.json()
         buf = StringIO(dct['targets'])
         cls._target_frame = pd.read_csv(buf).set_index('abbrev')
-        cls._target_layout = dct['layout'].split('\n')
+        cls._target_layout = dct['layout'].strip().split('\n')
 
         req = f'{server}/colnames/{project}'
         resp = requests.get(req)

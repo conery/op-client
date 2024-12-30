@@ -31,7 +31,7 @@ def init_cli():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--log', metavar='X', choices=['quiet','info','debug'])
-    parser.add_argument('--server', metavar='S', default='http://optimizationtool.oregontidegates.org/op', help='URL of the OptiPass server')
+    parser.add_argument('--server', metavar='S', default='http://localhost:8000', help='URL of the OptiPass server')
     parser.add_argument('--project', metavar='X', required=True, help='name of dataset to use')
     parser.add_argument('--port', metavar='N', type=int, default=5006, help='local port for the Panel server')
     parser.add_argument('--tab', metavar='N', type=int, default=0, help='initial tab to display in GUI')
