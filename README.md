@@ -10,7 +10,7 @@ In order to avoid requiring end users to install OptiPass and the libraries it d
 
 The web application has two components:  
 
-- `op-server` [https://github.com/conery/op-client](https://github.com/conery/op-client) is a REST server, written in Python using FastAPI, that provides the interface to OptiPass.
+- `op-server` [https://github.com/conery/op-server](https://github.com/conery/op-server) is a REST server, written in Python using FastAPI, that provides the interface to OptiPass.
 - `op-client`, in this repo, is also written in Python; it uses Panel to display the GUI that end users connect to.
 
 Since OptiPass is a Windows-only executable the server must be deployed on a Windows system, _e.g._ a VM running at Amazon Web Services.  The client can be run on any system, and a containerized version is also available at DockerHub.
