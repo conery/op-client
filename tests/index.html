@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Tests - OptiPass Client</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/tidegates.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Tests";
+        var mkdocs_page_input_path = "tests.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> OptiPass Client
+        </a>
+        <div class="version">
+          Version 1.0.1
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Home</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">A Web App for OptiPass™</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deploying a Client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../modules/">Modules</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Tests</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#tests-for-optipasspy">Tests for optipass,py</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#test.test_optipass">test_optipass</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test.test_optipass.test_setup">test_setup</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">OptiPass Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation</li>
+      <li class="breadcrumb-item active">Tests</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="unit-tests">Unit Tests</h2>
+<p>Unit testing is done with <code>pytest</code>.
+To run all the tests, simply <code>cd</code> to the top level directory and type this shell command:</p>
+<pre><code class="language-bash">$ pytest
+</code></pre>
+<p>The tests are all in the <code>tests</code> directory:</p>
+<ul>
+<li><code>test_optipass.py</code> has functions that test the interface to OptiPass</li>
+</ul>
+<p>You can run one set of tests by including the file name in the shell command, <em>e.g.</em></p>
+<pre><code class="language-bash">$ pytest test/test_optipass.py
+</code></pre>
+<h3 id="tests-for-optipasspy">Tests for <code>optipass,py</code></h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="test.test_optipass"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="test.test_optipass.test_setup" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">test_setup</span><span class="p">(</span><span class="n">barriers</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">mapinfo</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Test the attributes saved by the setup method.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>test/test_optipass.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@responses</span><span class="o">.</span><span class="n">activate</span>
+<span class="k">def</span> <span class="nf">test_setup</span><span class="p">(</span><span class="n">barriers</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">mapinfo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Test the attributes saved by the setup method.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:8000&#39;</span>
+
+    <span class="n">path_to_projects</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/projects&#39;</span>
+    <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path_to_projects</span><span class="p">,</span> <span class="n">json</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;demo&quot;</span><span class="p">])</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">barriers</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">path_to_barriers</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/barriers/demo&#39;</span>
+        <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path_to_barriers</span><span class="p">,</span> <span class="n">json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;barriers&quot;</span><span class="p">:</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()})</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">target_csv</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">target_layout</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">path_to_targets</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/targets/demo&#39;</span>
+    <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path_to_targets</span><span class="p">,</span> <span class="n">json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;targets&quot;</span><span class="p">:</span><span class="n">target_csv</span><span class="p">,</span> <span class="s2">&quot;layout&quot;</span><span class="p">:</span> <span class="n">target_layout</span><span class="p">})</span>
+
+    <span class="n">path_to_colnames</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/colnames/demo&#39;</span>
+    <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path_to_colnames</span><span class="p">,</span> <span class="n">json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">:[</span><span class="s2">&quot;colnames.csv&quot;</span><span class="p">]})</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mapinfo</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">path_to_mapinfo</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/mapinfo/demo&#39;</span>
+        <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path_to_mapinfo</span><span class="p">,</span> <span class="n">json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;mapinfo&quot;</span><span class="p">:</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()})</span>
+
+    <span class="n">OP</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="s1">&#39;demo&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">server_url</span> <span class="o">==</span> <span class="s1">&#39;http://localhost:8000&#39;</span>
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">project_name</span> <span class="o">==</span> <span class="s1">&#39;demo&#39;</span>
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">initial_tab</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;long&#39;</span><span class="p">,</span><span class="s1">&#39;short&#39;</span><span class="p">,</span><span class="s1">&#39;label&#39;</span><span class="p">,</span><span class="s1">&#39;infra&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;T1&#39;</span><span class="p">,</span><span class="s1">&#39;T2&#39;</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">target_layout</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;T1 T2&#39;</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">mapping_name</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">target_columns</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;colnames.csv&#39;</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">mapinfo</span><span class="p">[</span><span class="s1">&#39;map_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;StaticMap&#39;</span>
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">mapinfo</span><span class="p">[</span><span class="s1">&#39;map_file&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Riverlands.png&#39;</span>
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">mapinfo</span><span class="p">[</span><span class="s1">&#39;map_title&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;The Riverlands&#39;</span>
+
+    <span class="k">assert</span> <span class="n">OP</span><span class="o">.</span><span class="n">region_names</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;Red Fork&#39;</span><span class="p">,</span><span class="s1">&#39;Trident&#39;</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">(</span><span class="s1">&#39;ABCDEF&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span>
+    <span class="k">assert</span> <span class="nb">round</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">==</span> <span class="mi">590000</span>
+
+    <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">total_cost</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="n">OP</span><span class="o">.</span><span class="n">region_names</span>
+    <span class="k">assert</span> <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">total_cost</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span>  <span class="nb">round</span><span class="p">(</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">OP</span><span class="o">.</span><span class="n">initial_tab</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="s1">&#39;no setter&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../modules/" class="btn btn-neutral float-left" title="Modules"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../modules/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
