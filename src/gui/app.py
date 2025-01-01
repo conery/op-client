@@ -80,7 +80,8 @@ class TideGatesApp(pn.template.BootstrapTemplate):
         self.climate_help_button = pn.widgets.Button(name='ℹ️', stylesheets = [help_button_style_sheet])
         self.climate_help_button.on_click(self.climate_help_cb)
 
-        self.tab_height = int(self.map.graphic().height * 1.05)
+        # self.tab_height = int(self.map.graphic().height * 1.05)
+        self.tab_height = 900
 
         welcome_tab = pn.Column(
             self.section_head('Welcome'),

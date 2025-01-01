@@ -2,6 +2,7 @@
 # Widgets to display budget options for the Tide Gate Optimization tool
 #
 
+import logging
 import panel as pn
 from bokeh.models.formatters import NumeralTickFormatter
 
@@ -81,12 +82,14 @@ class BasicBudgetBox(pn.WidgetBox):
         ('$100M', 100000000),
     ]
 
+    MIN_LEVELS = 3
+
     def __init__(self):
         super(BasicBudgetBox, self).__init__(margin=(15,0,15,5))
         self.labels = [ x[0] for x in self.levels ]
         self.map = { x[0]: x[1] for x in self.levels }
         self.slider = pn.widgets.DiscreteSlider(
-            options = self.labels[:1], 
+            options = self.labels[:self.MIN_LEVELS], 
             value = self.labels[0],
             name = 'Maximum Budget',
             margin=(20,20,20,20),
@@ -104,8 +107,9 @@ class BasicBudgetBox(pn.WidgetBox):
         """
         for i in range(len(self.levels)-1, -1, -1):
             if n >= self.levels[i][1]:
-                self.slider.options = self.labels[:i+1]
                 break
+        n = max(n, self.MIN_LEVELS)
+        self.slider.options = self.labels[:i+1]
 
     BUDGET_COUNT = 10
 
