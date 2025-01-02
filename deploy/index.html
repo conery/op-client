@@ -35,7 +35,7 @@
           <a href=".." class="icon icon-home"> OptiPass Client
         </a>
         <div class="version">
-          Version 1.0.1
+          Version 1.0.6
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -53,9 +53,31 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Deploying a Client</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#local">Local</a>
+    <li class="toctree-l2"><a class="reference internal" href="#local-installation-using-pip">Local Installation Using Pip</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-download-the-source-code">1. Download the Source Code</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#local-container">Local Container</a>
+    <li class="toctree-l3"><a class="reference internal" href="#2-install-the-python-libraries">2. Install the Python Libraries</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-start-the-client">3. Start the Client</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-connect-to-the-client">4. Connect to the Client</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-shutting-down-the-client">5. Shutting Down the Client</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#local-container-with-docker-desktop">Local Container with Docker Desktop</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-pull-the-image">1. Pull the Image</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-start-the-container">2. Start the Container</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-open-a-browser-window">3. Open a Browser Window</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-managing-the-container">4. Managing the Container</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#container-in-the-cloud">Container in the Cloud</a>
     </li>
@@ -64,7 +86,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../modules/">Modules</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules/">Reference</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gui/">GUI</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../tests/">Tests</a>
                   </li>
@@ -94,22 +118,117 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="deploying-a-client">Deploying a Client</h1>
-<h2 id="local">Local</h2>
-<p>Similar to Jupyter</p>
-<p>Install using Pip</p>
-<p>Start from command line.  App opens web browser that communicates with remote server.</p>
-<p>Picture.</p>
-<h2 id="local-container">Local Container</h2>
-<p>Similar to first approach, but if Docker installed, requires no new software.</p>
-<p>Picture.</p>
+<h2 id="local-installation-using-pip">Local Installation Using Pip</h2>
+<p>To run the <code>op-client</code> application on your own system you need Python version 3.11.1 or later.</p>
+<p>When you type the <code>pip</code> command that installs the code you will probably be downloading dozens of new libraries, including Panel (the GUI libarary), Bokeh (the server that manages the web application), Pandas (data science libarary that works with tabular data).
+We strongly advise creating a new Python environment and installing the client there.</p>
+<p>In the examples below, the shell prompt is preceded by <code>(tgo)</code>, which is the name of the Python environment used to make the examples.
+This environment is based on <code>pyenv</code> but Conda would work equally well.
+The second part of the prompt is the name of the directory where the command was entered.</p>
+<h4 id="1-download-the-source-code">1. Download the Source Code</h4>
+<p>Open a terminal window and <code>cd</code> to a directory where you want to install the server.
+If you have the GitHub command line tools, type this command to download the source code from GitHub:</p>
+<pre><code class="language-bash">(tgo) [myprojects] $ gh repo clone conery/op-server
+</code></pre>
+<blockquote>
+<p><em>If you don't have <code>gh</code> on your system you can download the project archive from <a href="https://github.com/conery/op-client">https://github.com/conery/op-client</a> and unzip it in your project directory.</em> </p>
+</blockquote>
+<h4 id="2-install-the-python-libraries">2. Install the Python Libraries</h4>
+<p>At this point you should have a new folder named <code>op-sever</code> in your project directory.
+<code>cd</code> into that folder:</p>
+<pre><code class="language-bash">(tgo) [myprojects] $ cd op-server
+</code></pre>
+<p>Type this command to have Pip install all the libraries required by the client:</p>
+<pre><code class="language-bash">(tgo) [op-server] $ pip install -r requirements.txt
+</code></pre>
+<h4 id="3-start-the-client">3. Start the Client</h4>
+<p>The shell command that starts the client has this general form:</p>
+<pre><code class="language-bash">(tgo) [op-server] $ python src/main.py --server X --project P
+</code></pre>
+<p>where <code>X</code> is the URL of an <code>op-server</code> that will run OptiPass and <code>P</code> is the name of one of the data sets managed by that server.</p>
+<p>For example, if there is a server running at <code>tidegates-r-us.org</code> the command to connect to the server and work with the demo data would be</p>
+<pre><code class="language-bash">(tgo) [op-server] $ python src/main.py --server http://tidegates-r-us.org --project demo 
+</code></pre>
+<p>A couple of notes:</p>
+<ul>
+<li>Depending on how the server is set up you might need to use a secure connection, <em>i.e.</em> use <code>https</code> instead of <code>http</code> at the beginning of the URL.</li>
+<li>There may be additional "path" information at the end of the URL.  For example, the web server at <code>tidegates-r-us.org</code> may have several other web sites, in which case the web site administators there will have assigned a "path" that needs to be appended to the URL.  In that case, the URL would look something like this:</li>
+</ul>
+<pre><code>--server http://tidegates-r-us.org/op
+</code></pre>
+<blockquote>
+<p>where <code>op</code> is the path defined by the web administrators.</p>
+</blockquote>
+<h4 id="4-connect-to-the-client">4. Connect to the Client</h4>
+<p>At this point you will have a Bokeh server running on your computer.
+To use the client, start any web browser and have it connect to <code>http://localhost:5006</code>.</p>
+<blockquote>
+<p><em>The <code>localhost</code> part of that URL means "this computer".  If your web browser doesn't recognize that name try using <code>http://127.0.0.1:5006</code></em></p>
+</blockquote>
+<h4 id="5-shutting-down-the-client">5. Shutting Down the Client</h4>
+<p>When you're done:</p>
+<ul>
+<li>close the browser window</li>
+<li>go back to the terminal window where you typed the command to start the client and hit <code>⌃C</code> (hold down the control key while typing C)</li>
+</ul>
+<blockquote>
+<p><em>You can also just close the terminal window if you won't be needing it any more</em></p>
+</blockquote>
+<h2 id="local-container-with-docker-desktop">Local Container with Docker Desktop</h2>
+<p>Another way to run the <code>op-client</code> application on your own system is to run the code in a pre-configured "image" from DockerHub.
+A Docker image is a small, self-contained Linux system that has Python, the client application, and all the libraries it needs already installed and ready to go.</p>
+<h4 id="1-pull-the-image">1. Pull the Image</h4>
+<p>The first time you use the client you need to download the image from DockerHub (Docker refers to this as "pulling" the image).</p>
+<p>Open the Docker Desktop GUI.
+Click on "Docker Hub" in the panel on the left side of the window.
+In the search bar, type "conery", then look for <code>conery/op-client</code> and click on that.</p>
+<p>You should now see a page that has a short description of the image, and a button labeled "Pull" on the right side of the window.
+Click that button to download the image.</p>
+<h4 id="2-start-the-container">2. Start the Container</h4>
+<p>Once you have the image you can start a "container" (the Docker term for a running image).</p>
+<p>Open Docker Desktop and click on Images in the panel on the left.
+You should see table with a row for the <code>op-client</code> image.
+In the column labeled "Actions" there is a right-facing triangle (designed to look like the "play" button on a music app).</p>
+<p>Click the play button and a window will pop up.
+Click the arrow next to "Optional Settings".
+Under "Ports" there is a box.
+Click in the box, where it says "host port", and type 5006.</p>
+<p>At the bottom of the window is a section labeled "Environment Variables".
+This is where you specify the URL of the <code>op-server</code> you want to connect to and the name of the data set you want to use.</p>
+<ul>
+<li>Click in the box that says "Variable" and type <code>OP_SERVER</code> (using all upper case).  Next to it, click on "Value" and enter the URL of the server.  For example, if your server is at <code>tidegates-r-us.org</code> you would enter <code>http://tidegates-r-us.org</code> (see the note below).</li>
+<li>Click the plus sign to the right of the box where you just entered the URL.  A new pair of variable name and value boxes appear.  Enter <code>OP_PROJECT</code> in the variable box and the name of the data set (<em>e.g.</em> <code>demo</code>) in the value box.</li>
+</ul>
+<p>Click the Run box to launch the client application running inside your new container.</p>
+<p>Notes:</p>
+<ul>
+<li>Depending on how the server is set up you might need to use a secure connection, <em>i.e.</em> use <code>https</code> instead of <code>http</code> at the beginning of the URL for the <code>op-server</code>.</li>
+<li>There may be additional "path" information at the end of the URL.  For example, the web server at <code>tidegates-r-us.org</code> may have several other web sites, in which case the web site administators there will have assigned a "path" that needs to be appended to the URL.  In that case, the URL would look something like <code>http://tidegates-r-us.org/op</code>.</li>
+</ul>
+<h4 id="3-open-a-browser-window">3. Open a Browser Window</h4>
+<p>To connect to the software running in the container start a browser and tell it to open <code>http://localhost:5006</code> (if that doesn't work try <code>http://127.0.0.1:5006</code>).</p>
+<h4 id="4-managing-the-container">4. Managing the Container</h4>
+<p>When you're done you can close the browser window.</p>
+<p>Open the Docker Desktop window and click on Containers in the panel on the left.
+In the table row for your container, in the column named Actions, the "play" button has been turned into a "pause" button (a gray square).</p>
+<ul>
+<li>If you want to use the container again in the future click the pause button.
+After a few seconds (while Docker is shutting down the container) the button will again look like a play button.
+The next time you want to use it come back here to this window and click the play button.
+The container will resume where you left off -- just open a browser window and connect to <code>http://localhost:5006</code> again.
+You don't need to re-enter the container settings.</li>
+<li>If you are done with the container click the trash can icon at the end of the line.
+This will delete the container, but not the image.
+You can always come back in the future and create a new container using the steps in section 2 above.</li>
+</ul>
 <h2 id="container-in-the-cloud">Container in the Cloud</h2>
-<p>More work for admin to set it up, but then users/customers connect to remote container, have to do nothing.</p>
+<p>Coming soon: instructions for setting up a server at AWS.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href=".." class="btn btn-neutral float-left" title="A Web App for OptiPass™"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../modules/" class="btn btn-neutral float-right" title="Modules">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../modules/" class="btn btn-neutral float-right" title="Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>

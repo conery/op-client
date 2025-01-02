@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Modules - OptiPass Client</title>
+    <title>Reference - OptiPass Client</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -14,7 +14,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Modules";
+        var mkdocs_page_name = "Reference";
         var mkdocs_page_input_path = "modules.md";
         var mkdocs_page_url = null;
       </script>
@@ -35,7 +35,7 @@
           <a href=".." class="icon icon-home"> OptiPass Client
         </a>
         <div class="version">
-          Version 1.0.1
+          Version 1.0.6
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -56,7 +56,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Modules</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Reference</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#mainpy">main.py</a>
         <ul>
@@ -66,7 +66,57 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#oppy">op.py</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#metaop">MetaOP</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.MetaOP.setup">setup</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#op">OP</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OP.url_for_figure">url_for_figure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OP.format_budgets">format_budgets</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OP.format_budget_amount">format_budget_amount</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OP.fetch_html_file">fetch_html_file</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OP.run_optimizer">run_optimizer</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#opresult">OPResult</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OPResult.make_roi_curves">make_roi_curves</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OPResult.budget_table">budget_table</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.OPResult.gate_table">gate_table</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#devop">DevOP</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.DevOP.default_list">default_list</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.DevOP.default_regions">default_regions</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.DevOP.default_budget">default_budget</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.DevOP.default_targets">default_targets</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.op.DevOP.results_dir">results_dir</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gui/">GUI</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../tests/">Tests</a>
                   </li>
@@ -86,7 +136,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation</li>
-      <li class="breadcrumb-item active">Modules</li>
+      <li class="breadcrumb-item active">Reference</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -95,8 +145,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="modules">Modules</h1>
-<p>The source code is in a folder named <code>src</code>...</p>
+                <h1 id="reference">Reference</h1>
+<p>The source code is in a folder named <code>src</code>.
+Inside that are files for the top level application (<code>main.py</code>), a module that serves as the interface to the server (<code>op.py</code>), and a folder named <code>gui</code> that has definitions of the components in graphical user interface.</p>
 <pre><code>src
 ├── gui
 │   ├── app.py
@@ -111,6 +162,8 @@
 └── op.py
 </code></pre>
 <h2 id="mainpy"><code>main.py</code></h2>
+<p>This file has the main entry point called when the program is launched from the command line.
+It uses <code>argparse</code> to get command line options, initializes the OptiPass interface, creates the Panel application, and starts the application.</p>
 <h3 id="make_app"><code>make_app</code></h3>
 
 
@@ -213,13 +266,1431 @@
             </details>
     </div>
 
+</div><h2 id="oppy"><code>op.py</code></h2>
+<p>A class named OP provides an abstract interface to the data for the current project.
+For example, the "widgets" in the GUI call OP methods to get the list of region names or descriptions of restoration targets.</p>
+<p>The module is essentially a "singleton object".
+It defines a collection of static methods.
+When the top level application starts it calls a method named <code>setup</code>, which initializes all the data; after that the GUI objects call methods to get values of the data.</p>
+<h3 id="metaop">MetaOP</h3>
+<p>The OP class is actually constructed at runtime by a "metaclass".
+When the application is started, OP has a few methods but no data.
+The <code>setup</code> method fetches the data from the server and adds it to the OP class.</p>
+<p>Here's a concrete example of how this is done, using target data, which is stored in a Pandas dataframe.
+The metaclass, which is named MetaOP, defines a method named <code>target_frame</code>:</p>
+<pre><code class="language-python">    @property
+    def target_frame(cls):
+        return cls._target_frame
+</code></pre>
+<p>That definition defines the name, but that name doesn't refer to any acutal table of values at this point.</p>
+<p>The <code>setup</code> method includes these lines to fetch the target descriptions from the server, convert those descriptions into a Pandas dataframe, and save the frame:</p>
+<pre><code class="language-python">        req = f'{server}/targets/{project}'
+        resp = requests.get(req)
+        if resp.status_code != 200:
+            raise OPServerError(resp)
+        dct = resp.json()
+        buf = StringIO(dct['targets'])
+        cls._target_frame = pd.read_csv(buf).set_index('abbrev')
+</code></pre>
+<p>The first line creates the URL of the REST request to send to the remote server, the second line sends the request.
+When the response comes back, the third line makes sure the request succeeded.
+Lines 4 and 5 create the data frame, and the last line saves it in an internal variable named <code>_target_frame</code>.</p>
+<p>From this point on, methods in the GUI can access the data by using the expression <code>OP.target_frame</code>.
+That will call the <code>target_frame</code> method shown above, which accesses the value in the internal variable and returns it to the GUI.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code>type</code></p>
+
+
+      <p>This metaclass creates the API for the OP class.  It defines read-only
+attributes that can be accessed but not written from outside the OP module.
+The values of the attributes can only be set when the setup method is
+called.  Note: one attribute (region_names) is writeable.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.MetaOP.setup" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Initialize the connection to the OptiPass server.  Connect to the
+server, get the barrier file and other data for the project, save
+it in read-only class variables.</p>
+<p>Raises an exception if the server is not accessible or if the project
+name is not known to the server.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>server</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>the URL of an OptiPass REST server</p>
+              </div>
+            </li>
+            <li>
+              <b><code>project</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>the name of a data set on the server</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tab</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>the tab to show when starting the app</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tab</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Initialize the connection to the OptiPass server.  Connect to the</span>
+<span class="sd">    server, get the barrier file and other data for the project, save</span>
+<span class="sd">    it in read-only class variables.</span>
+
+<span class="sd">    Raises an exception if the server is not accessible or if the project</span>
+<span class="sd">    name is not known to the server.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      server: the URL of an OptiPass REST server</span>
+<span class="sd">      project: the name of a data set on the server</span>
+<span class="sd">      tab: the tab to show when starting the app</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connecting to </span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/projects&#39;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;request: </span><span class="si">{</span><span class="n">req</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">502</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;unknown project: </span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_server_url</span> <span class="o">=</span> <span class="n">server</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_project_name</span> <span class="o">=</span> <span class="n">project</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/targets/</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;targets&#39;</span><span class="p">])</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_target_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;abbrev&#39;</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_target_layout</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/colnames/</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_mapping_name</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_target_columns</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/mapinfo/</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_mapinfo</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;mapinfo&#39;</span><span class="p">])</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">server</span><span class="si">}</span><span class="s1">/barriers/</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;barriers&#39;</span><span class="p">])</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_barrier_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">)</span>
+
+    <span class="n">total_cost</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_barrier_frame</span><span class="p">[[</span><span class="s1">&#39;region&#39;</span><span class="p">,</span><span class="s1">&#39;cost&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;region&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_region_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">total_cost</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_total_cost</span> <span class="o">=</span> <span class="p">{</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">total_cost</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="p">}</span>
+
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_initial_tab</span> <span class="o">=</span> <span class="n">tab</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;setup complete&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="op">OP</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Interface to an OptiPass server.  The module consists of a set of
+static methods that manage a single connection (i.e. it's basically
+a singleton object).</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OP.url_for_figure" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">url_for_figure</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Return the URL to use to fetch an image from the server.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>fn</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>the file name of the image</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>str</code>
+              –
+              <div class="doc-md-description">
+                <p>the URL</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">url_for_figure</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the URL to use to fetch an image from the server.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      fn: the file name of the image</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      the URL</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s1">/static/images/&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OP.format_budgets" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">format_budgets</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Create a dictionary that maps budget values to abbreviated
+dollar amounts.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>cols</code></b>
+                  (<code>list[int]</code>)
+              –
+              <div class="doc-md-description">
+                <p>the list of budget amounts</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>dict[int, str]</code>
+              –
+              <div class="doc-md-description">
+                <p>dictionary</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">format_budgets</span><span class="p">(</span><span class="n">cols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a dictionary that maps budget values to abbreviated</span>
+<span class="sd">    dollar amounts.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      cols: the list of budget amounts</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      dictionary </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="n">n</span><span class="p">:</span> <span class="n">OP</span><span class="o">.</span><span class="n">format_budget_amount</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cols</span> <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OP.format_budget_amount" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">format_budget_amount</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Convert an integer dollar amount into an abbreviation, e.g.
+100000 becomes "$100K" and 2500000 becomes "$2.5M".</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>the amount to convert</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>str</code>
+              –
+              <div class="doc-md-description">
+                <p>the abbreviation</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">format_budget_amount</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Convert an integer dollar amount into an abbreviation, e.g.</span>
+<span class="sd">    100000 becomes &quot;$100K&quot; and 2500000 becomes &quot;$2.5M&quot;.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      n: the amount to convert</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      the abbreviation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">divisor</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">OP</span><span class="o">.</span><span class="n">dollar_format</span><span class="p">[</span><span class="s1">&#39;mil&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">1000000</span> <span class="k">else</span> <span class="n">OP</span><span class="o">.</span><span class="n">dollar_format</span><span class="p">[</span><span class="s1">&#39;thou&#39;</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="n">divisor</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.0&#39;</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">+</span><span class="n">suffix</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OP.fetch_html_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fetch_html_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Fetch an HTML file from the server.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>fn</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>the name of the file</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>str</code>
+              –
+              <div class="doc-md-description">
+                <p>the contents of the file, as a single string</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">fetch_html_file</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Fetch an HTML file from the server.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      fn:  the name of the file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      the contents of the file, as a single string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s1">/html/</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OP.run_optimizer" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run_optimizer</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Send a request to the op-server to run OptiPass using settings
+from the widgets.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>regions</code></b>
+                  (<code>list[str]</code>)
+              –
+              <div class="doc-md-description">
+                <p>a list of geographic regions (river names) to use</p>
+              </div>
+            </li>
+            <li>
+              <b><code>budgets</code></b>
+                  (<code>tuple[str, str]</code>)
+              –
+              <div class="doc-md-description">
+                <p>a tuple with budget settings (start, increment, count)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>targets</code></b>
+                  (<code>list[str]</code>)
+              –
+              <div class="doc-md-description">
+                <p>a list of IDs of targets</p>
+              </div>
+            </li>
+            <li>
+              <b><code>weights</code></b>
+                  (<code>list[int]</code>)
+              –
+              <div class="doc-md-description">
+                <p>a list of target weights</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mapping</code></b>
+                  (<code>str | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>the name of a column mapping file for targets</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>summary</code></b>              –
+              <div class="doc-md-description">
+                <p>data frame with one row per budget level</p>
+              </div>
+            </li>
+            <li>
+<b><code>matrix</code></b>              –
+              <div class="doc-md-description">
+                <p>data frame with one row per barrier</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">run_optimizer</span><span class="p">(</span>
+    <span class="n">regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">budgets</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>       
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Send a request to the op-server to run OptiPass using settings</span>
+<span class="sd">    from the widgets.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        regions: a list of geographic regions (river names) to use</span>
+<span class="sd">        budgets: a tuple with budget settings (start, increment, count)</span>
+<span class="sd">        targets: a list of IDs of targets</span>
+<span class="sd">        weights: a list of target weights</span>
+<span class="sd">        mapping: the name of a column mapping file for targets</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        summary: data frame with one row per budget level</span>
+<span class="sd">        matrix:  data frame with one row per barrier</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s1">/optipass/</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;regions&#39;</span><span class="p">:</span> <span class="n">regions</span><span class="p">,</span>
+        <span class="s1">&#39;budgets&#39;</span><span class="p">:</span> <span class="n">budgets</span><span class="p">,</span>
+        <span class="s1">&#39;targets&#39;</span><span class="p">:</span> <span class="n">targets</span><span class="p">,</span>
+        <span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="n">weights</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;mapping&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">OP</span><span class="o">.</span><span class="n">mapping_name</span><span class="p">,</span><span class="n">mapping</span><span class="p">],</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">token</span> <span class="o">:=</span> <span class="n">DevOP</span><span class="o">.</span><span class="n">results_dir</span><span class="p">():</span>
+        <span class="n">args</span><span class="p">[</span><span class="s1">&#39;tempdir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
+
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OPServerError</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;matrix&#39;</span><span class="p">])</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">summary</span><span class="p">,</span> <span class="n">matrix</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="opresult">OPResult</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>The <code>run_optimizer</code> method creates an instance of this class each time 
+the server returns a set of results from an optimization run.</p>
+<p>Pass the constructor the dictionaries returned by the server and
+the widget settings (region names, budget levels, target selection)
+that were passed to <code>run_optimizer</code>.</p>
+<p>The code that creates the output tab calls methods of this class
+to make figures and tables displayed in the GUI.</p>
+
+                  <details class="quote">
+                    <summary>Source code in <code>src/op.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regions</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mapping</span><span class="p">,</span> <span class="n">summary</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">binc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcount</span> <span class="o">=</span> <span class="n">budgets</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">display_figures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">download_figures</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># The &#39;gates&#39; column is a string, need to convert it to a list</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">gates</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">gates</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)))</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OPResult.make_roi_curves" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">make_roi_curves</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Generate ROI plots based on computed benefits.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_roi_curves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate ROI plots based on computed benefits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">climate</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">subtitle</span> <span class="o">=</span> <span class="s1">&#39;Region: &#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;Regions: &#39;</span>
+    <span class="n">subtitle</span> <span class="o">+=</span>  <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">long</span>
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">infra</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">mapping_name</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bokeh_figure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_figures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">target</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyplot_figure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_figures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">target</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Combined Potential Benefit&#39;</span>
+        <span class="k">if</span> <span class="n">climate</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">mapping</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">OP</span><span class="o">.</span><span class="n">mapping_name</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">:</span>
+            <span class="n">subtitle</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Targets:&#39;</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="n">subtitle</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">short</span><span class="si">}</span><span class="s1"> ⨉ </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bokeh_figure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">netgain</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">,</span> <span class="s1">&#39;Weighted Net Gain&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_figures</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Net&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyplot_figure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">netgain</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">,</span> <span class="s1">&#39;Weighted Net Gain&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_figures</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Net&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OPResult.budget_table" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">budget_table</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Make a table that has one column for each budget level, showing
+which barriers were included in the solution for that level.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">budget_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a table that has one column for each budget level, showing</span>
+<span class="sd">    which barriers were included in the solution for that level. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[[</span><span class="s1">&#39;budget&#39;</span><span class="p">,</span> <span class="s1">&#39;gates&#39;</span><span class="p">]]</span>
+    <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Budget&#39;</span><span class="p">,</span> <span class="s1">&#39;gates&#39;</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+        <span class="n">df</span><span class="p">,</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">gates</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">len</span><span class="p">))</span>
+    <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">colnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;# Barriers&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">OP</span><span class="o">.</span><span class="n">target_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">short</span>
+            <span class="c1"># if self.weights:</span>
+            <span class="c1">#     col += f&#39;⨉{self.weights[i]}&#39;</span>
+            <span class="n">colnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+        <span class="n">df</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[[</span><span class="s1">&#39;wph&#39;</span><span class="p">,</span><span class="s1">&#39;netgain&#39;</span><span class="p">]]</span>
+    <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">colnames</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;WPH&#39;</span><span class="p">,</span><span class="s1">&#39;Net Gain&#39;</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">colnames</span>
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.OPResult.gate_table" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gate_table</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Make a table that has one row per gate with columns that are relevant
+to the output display</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">gate_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a table that has one row per gate with columns that are relevant</span>
+<span class="sd">    to the output display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filtered</span> <span class="o">=</span> <span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="p">[</span><span class="n">OP</span><span class="o">.</span><span class="n">barrier_frame</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)]</span>
+
+    <span class="n">col1</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">,</span><span class="s1">&#39;cost&#39;</span><span class="p">,</span><span class="s1">&#39;DSID&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">filtered</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">budget_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="s1">&#39;0&#39;</span><span class="p">]</span>
+    <span class="n">target_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">col2</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span><span class="s1">&#39;dominant&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">filtered</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+        <span class="n">filtered</span><span class="p">[</span><span class="n">col1</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="n">budget_cols</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="n">target_cols</span><span class="p">],</span>
+        <span class="n">filtered</span><span class="p">[</span><span class="n">col2</span><span class="p">]</span>
+    <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">,</span><span class="s1">&#39;cost&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span><span class="s1">&#39;dominant&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="devop">DevOP</h3>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>A collection of utility functions for developers.  If there is an
+environment variable that defines a value for a widget the code that
+builds the GUI will put that value in the widget when it is created, 
+e.g. if OPREGIONS is set to "Coos Umpqua Coquille" those three regions 
+will be selected in the region box.</p>
+<p>If OPTMPDIR is defined it should be the path to a directory <strong>on the 
+server</strong> that has outputs from a previous optimization.  The path will
+be included in the request URL that runs OptiPass.  When the server
+see this it will return the previous results instead of running OptiPass
+again -- very useful for testing on macOS (which can't run OptiPass).</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.DevOP.default_list" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_list</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Split the value of an environment variable into a list</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">default_list</span><span class="p">(</span><span class="n">varname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Split the value of an environment variable into a list</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">lst</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">varname</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lst</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.DevOP.default_regions" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_regions</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Return the value of OPREGIONS</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">default_regions</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the value of OPREGIONS</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">DevOP</span><span class="o">.</span><span class="n">default_list</span><span class="p">(</span><span class="s1">&#39;OPREGIONS&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.DevOP.default_budget" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_budget</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Return the value of OPBUDGET</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">default_budget</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the value of OPBUDGET</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;OPBUDGET&#39;</span><span class="p">,</span><span class="s1">&#39;0&#39;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.DevOP.default_targets" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_targets</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Return the value of OPTARGETS</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">default_targets</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the value of OPTARGETS</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">DevOP</span><span class="o">.</span><span class="n">default_list</span><span class="p">(</span><span class="s1">&#39;OPTARGETS&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="src.op.DevOP.results_dir" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">results_dir</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Return the value of OPTMPDIR</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/op.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">results_dir</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the value of OPTMPDIR</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;OPTMPDIR&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
 </div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../deploy/" class="btn btn-neutral float-left" title="Deploying a Client"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../tests/" class="btn btn-neutral float-right" title="Tests">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../gui/" class="btn btn-neutral float-right" title="GUI">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -245,7 +1716,7 @@
       <span><a href="../deploy/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../tests/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../gui/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

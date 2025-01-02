@@ -35,7 +35,7 @@
           <a href=".." class="icon icon-home"> OptiPass Client
         </a>
         <div class="version">
-          Version 1.0.1
+          Version 1.0.6
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -56,17 +56,21 @@
               </ul>
               <p class="caption"><span class="caption-text">Documentation</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../modules/">Modules</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules/">Reference</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gui/">GUI</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Tests</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#tests-for-optipasspy">Tests for optipass,py</a>
+    <li class="toctree-l2"><a class="reference internal" href="#test-the-op-class">Test the OP Class</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#test.test_optipass">test_optipass</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#test.test_optipass.test_setup">test_setup</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#widget-tests">Widget Tests</a>
     </li>
     </ul>
                   </li>
@@ -107,7 +111,25 @@ To run all the tests, simply <code>cd</code> to the top level directory and type
 <p>You can run one set of tests by including the file name in the shell command, <em>e.g.</em></p>
 <pre><code class="language-bash">$ pytest test/test_optipass.py
 </code></pre>
-<h3 id="tests-for-optipasspy">Tests for <code>optipass,py</code></h3>
+<h3 id="test-the-op-class">Test the OP Class</h3>
+<p>The OP class is the abstract interface to the <code>op-server</code> REST server.</p>
+<p>When the main application starts it calls the <code>setup</code> method.
+That method sends HTTP requests to the server and it saves the returned values so they are accessible to static methods of the OP class.</p>
+<p>To test <code>setup</code> we use a library named <code>responses</code>.
+It allows us to "short-circuit" the HTTP request.
+Whenever <code>setup</code> tries to send a URL, the <code>responses</code> module catches it and returns a response to use for the test.</p>
+<p>Here's an example.  To get the list of project names from the server, the <code>setup</code> method has this code:</p>
+<pre><code>      req = f'{server}/projects'
+      resp = requests.get(req)
+</code></pre>
+<p>In the test, we have this code:</p>
+<pre><code>    path_to_projects = f'{server}/projects'
+    responses.get(path_to_projects, json = [&quot;demo&quot;])
+</code></pre>
+<p>What that means is "whenever there is an HTTP request to a URL of the form <code>f'{server}/projects'</code> reply with the JSON form of the list <code>["demo"]</code>.
+In other words, trick the <code>setup</code> code into thinking it connected to a server that has the demo data.</p>
+<p>The body of the <code>test_setup</code> method defines responses for all of the requests that <code>setup</code> will try to send.
+It then calls <code>setup</code>, and when it returns the test code will check all of the attributes of the OP class to make sure they have the expected values.</p>
 
 
 <div class="doc doc-object doc-module">
@@ -275,12 +297,13 @@ To run all the tests, simply <code>cd</code> to the top level directory and type
 
     </div>
 
-</div>
+</div><h3 id="widget-tests">Widget Tests</h3>
+<p>TBD</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../modules/" class="btn btn-neutral float-left" title="Modules"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../gui/" class="btn btn-neutral float-left" title="GUI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -303,7 +326,7 @@ To run all the tests, simply <code>cd</code> to the top level directory and type
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../modules/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../gui/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
