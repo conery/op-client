@@ -150,12 +150,30 @@ class OP(metaclass=MetaOP):
     """
 
     @staticmethod
-    def url_for_figure(fn):
+    def url_for_figure(fn: str) -> str:
+        '''
+        Return the URL to use to fetch an image from the server.
+
+        Arguments:
+          fn: the file name of the image
+        
+        Returns:
+          the URL
+        '''
         return f'{OP.server_url}/static/images/'
 
-
     @staticmethod
-    def format_budgets(cols):
+    def format_budgets(cols: list[int]) -> dict[int,str]:
+        '''
+        Create a dictionary that maps budget values to abbreviated
+        dollar amounts.
+
+        Arguments:
+          cols: the list of budget amounts
+
+        Returns:
+          dictionary 
+        '''
         return { n: OP.format_budget_amount(n) for n in cols }
     
     dollar_format = {
@@ -164,7 +182,17 @@ class OP(metaclass=MetaOP):
     }
 
     @staticmethod
-    def format_budget_amount(n):
+    def format_budget_amount(n: int) -> str:
+        '''
+        Convert an integer dollar amount into an abbreviation, e.g.
+        100000 becomes "$100K" and 2500000 becomes "$2.5M".
+
+        Arguments:
+          n: the amount to convert
+
+        Returns:
+          the abbreviation
+        '''
         divisor, suffix = OP.dollar_format['mil'] if n >= 1000000 else OP.dollar_format['thou']
         s = '${:}'.format(n/divisor)
         if s.endswith('.0'):
@@ -172,21 +200,21 @@ class OP(metaclass=MetaOP):
         return s+suffix
     
     @staticmethod
-    def fetch_html_file(fn):
+    def fetch_html_file(fn: str) -> str:
+        '''
+        Fetch an HTML file from the server.
+
+        Arguments:
+          fn:  the name of the file
+
+        Returns:
+          the contents of the file, as a single string
+        '''
         req = f'{OP.server_url}/html/{OP.project_name}/{fn}'
         resp = requests.get(req)
         if resp.status_code != 200:
             raise OPServerError(resp)
         return resp.json()
-
-    # @staticmethod
-    # def fetch_image(fn):
-    #     req = f'{OP.server_url}/image/{OP.project_name}/{fn}'
-    #     resp = requests.get(req)
-    #     if resp.status_code != 200:
-    #         print(resp)
-    #         raise OPServerError(resp)
-    #     return resp.content
 
     @staticmethod
     def run_optimizer(
@@ -236,12 +264,15 @@ class OP(metaclass=MetaOP):
     
 class OPResult:
     """
-    Create an instance of this class each time the server returns a
-    set of results from an optimization run.
+    The `run_optimizer` method creates an instance of this class each time 
+    the server returns a set of results from an optimization run.
 
     Pass the constructor the dictionaries returned by the server and
     the widget settings (region names, budget levels, target selection)
-    so it can create plots and output tables.
+    that were passed to `run_optimizer`.
+
+    The code that creates the output tab calls methods of this class
+    to make figures and tables displayed in the GUI.
     """
 
     def __init__(self, regions, budgets, targets, weights, mapping, summary, matrix):
@@ -394,27 +425,52 @@ class OPResult:
 
 class DevOP:
     '''
-    A collection of utility functions for developers
+    A collection of utility functions for developers.  If there is an
+    environment variable that defines a value for a widget the code that
+    builds the GUI will put that value in the widget when it is created, 
+    e.g. if OPREGIONS is set to "Coos Umpqua Coquille" those three regions 
+    will be selected in the region box.
+
+    If OPTMPDIR is defined it should be the path to a directory **on the 
+    server** that has outputs from a previous optimization.  The path will
+    be included in the request URL that runs OptiPass.  When the server
+    see this it will return the previous results instead of running OptiPass
+    again -- very useful for testing on macOS (which can't run OptiPass). 
     '''
 
     @staticmethod
     def default_list(varname):
+        '''
+        Split the value of an environment variable into a list
+        '''
         if lst := os.getenv(varname):
             return lst.split(':')
         return []
     
     @staticmethod
     def default_regions():
+        '''
+        Return the value of OPREGIONS
+        '''
         return DevOP.default_list('OPREGIONS')
 
     @staticmethod
     def default_budget():
+        '''
+        Return the value of OPBUDGET
+        '''
         return int(os.getenv('OPBUDGET','0'))
 
     @staticmethod
     def default_targets():
+        '''
+        Return the value of OPTARGETS
+        '''
         return DevOP.default_list('OPTARGETS')
 
     @staticmethod
     def results_dir():
+        '''
+        Return the value of OPTMPDIR
+        '''
         return os.getenv('OPTMPDIR')

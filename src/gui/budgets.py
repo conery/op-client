@@ -108,7 +108,7 @@ class BasicBudgetBox(pn.WidgetBox):
         for i in range(len(self.levels)-1, -1, -1):
             if n >= self.levels[i][1]:
                 break
-        n = max(n, self.MIN_LEVELS)
+        i = max(i, self.MIN_LEVELS)
         self.slider.options = self.labels[:i+1]
 
     BUDGET_COUNT = 10
